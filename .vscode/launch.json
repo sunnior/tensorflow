@@ -4,6 +4,26 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+    {
+        "name": "(gdb) proto_text",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/tf_proto_text",
+        "args": ["gencode", "code", "code/tensorflow/tools/proto_text/placeholder.txt", "code/tensorflow/core/lib/core/error_codes.proto"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
         {
             "name": "(gdb) test_lib",
             "type": "cppdbg",

@@ -34,4 +34,5 @@ set(protobuf_static_library "${tensorflow_root_dir}/external/protobuf/lib/libpro
 set(zlib_static_library "${tensorflow_root_dir}/external/zlib/lib/libz.${static_lib_ext}")
 
 include("cmake/tf_core_framework.cmake")
-include("cmake/tf_core_tests.cmake")
+#include("cmake/tf_core_tests.cmake")
+include("cmake/tf_proto_text.cmake")
