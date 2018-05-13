@@ -67,6 +67,7 @@ target_link_libraries(tf_core_lib
     tf_protoc 
     ${protobuf_static_library}
     ${nsync_static_library}
+    ${zlib_static_library}    
 )
 
 if (NOT WIN32)
