@@ -18,6 +18,7 @@ include_directories(
     "${tensorflow_root_dir}/external/nsync/include"
     "${tensorflow_root_dir}/external/protobuf/include"
     "${tensorflow_root_dir}/external/zlib/include"
+    "${tensorflow_root_dir}/external/farmhash/include"
 )
 
 if (WIN32)
@@ -27,12 +28,12 @@ set(static_lib_ext "a")
 
 endif (WIN32)
 
-#set(gtest_static_library "${tensorflow_root_dir}/external/gtest/lib/libgtest.${static_lib_ext}")
 set(gtest_static_library "${tensorflow_root_dir}/external/gtest/lib/libgtest.${static_lib_ext}")
 set(nsync_static_library "${tensorflow_root_dir}/external/nsync/lib/libnsync.${static_lib_ext}")
 set(protobuf_static_library "${tensorflow_root_dir}/external/protobuf/lib/libprotobuf.${static_lib_ext}")
 set(zlib_static_library "${tensorflow_root_dir}/external/zlib/lib/libz.${static_lib_ext}")
+set(farmhash_static_library "${tensorflow_root_dir}/external/farmhash/lib/libfarmhash.${static_lib_ext}")
 
 include("cmake/tf_core_framework.cmake")
-#include("cmake/tf_core_tests.cmake")
+include("cmake/tf_core_tests.cmake")
 include("cmake/tf_proto_text.cmake")

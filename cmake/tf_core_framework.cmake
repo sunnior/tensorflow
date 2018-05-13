@@ -58,7 +58,7 @@ list(REMOVE_ITEM tf_core_lib_srcs ${tf_core_lib_test_srcs})
 add_library(tf_core_lib STATIC ${tf_core_lib_srcs})
 
 file(GLOB_RECURSE tf_protoc_srcs 
-    "${tensorflow_root_dir}/gencode/*.cc"
+    "${tensorflow_root_dir}/gencode/tensorflow/*.cc"
 )
 
 add_library(tf_protoc ${tf_protoc_srcs})
@@ -67,7 +67,8 @@ target_link_libraries(tf_core_lib
     tf_protoc 
     ${protobuf_static_library}
     ${nsync_static_library}
-    ${zlib_static_library}    
+    ${zlib_static_library} 
+    ${farmhash_static_library}   
 )
 
 if (NOT WIN32)

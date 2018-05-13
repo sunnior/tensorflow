@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-source_dir = 'code/tensorflow'
+source_dir = 'code'
 protoc = 'build/tf_proto_text'
 placeholder = 'code/tensorflow/tools/proto_text/placeholder.txt'
 
