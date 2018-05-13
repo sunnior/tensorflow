@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.5)
+
+project(tensorflow C CXX)
+
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+
+set(tensorflow_root_dir ${CMAKE_CURRENT_SOURCE_DIR})
+set(tensorflow_source_dir "${tensorflow_root_dir}/code")
+
+include_directories(
+    ${tensorflow_source_dir}
+    "${tensorflow_root_dir}/gencode"
+    "${tensorflow_root_dir}/external/eigen3/include"
+    "${tensorflow_root_dir}/external/gtest/include"
+    "${tensorflow_root_dir}/external/nsync/include"
+    "${tensorflow_root_dir}/external/protobuf/include"
+)
+
+if (WIN32)
+set(static_lib_ext "lib")
+else (WIN32)
+set(static_lib_ext "a")
+endif (WIN32)
+
+#set(gtest_static_library "${tensorflow_root_dir}/external/gtest/lib/libgtest.${static_lib_ext}")
+set(gtest_static_library "${tensorflow_root_dir}/download/build/install/lib/libgtest.${static_lib_ext}")
+set(nsync_static_library "${tensorflow_root_dir}/external/nsync/lib/libnsync.${static_lib_ext}")
+set(protobuf_static_library "${tensorflow_root_dir}/external/protobuf/lib/libprotobuf.${static_lib_ext}")
+
+include("cmake/tf_core_framework.cmake")
+include("cmake/tf_core_tests.cmake")

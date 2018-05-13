@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/code",
+                "${workspaceFolder}/gencode",
+                "${workspaceFolder}/external/protobuf/include",
+                "${workspaceFolder}/external/gtest/include",
+                "${workspaceFolder}/external/nsync/include",
+                "${workspaceFolder}/external/eigen3/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
