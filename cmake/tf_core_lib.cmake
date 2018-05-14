@@ -59,17 +59,32 @@ add_library(tf_core_lib STATIC ${tf_core_lib_srcs})
 
 file(GLOB_RECURSE tf_protoc_srcs 
     "${tensorflow_root_dir}/gencode/tensorflow/*.cc"
+    "${tensorflow_source_dir}/tensorflow/core/lib/strings/proto_text_util.cc"
 )
 
 add_library(tf_protoc ${tf_protoc_srcs})
 
-target_link_libraries(tf_core_lib  
-    tf_protoc 
-    ${protobuf_static_library}
-    ${nsync_static_library}
-    ${zlib_static_library} 
-    ${farmhash_static_library}   
+set(external_static_library
+"gtest/lib/libgtest"
+"nsync/lib/libnsync"
+"protobuf/lib/libprotobuf"
+"zlib/lib/libz"
 )
+ 
+if (WIN32)
+set(static_lib_ext "lib")
+else (WIN32)
+set(static_lib_ext "a")
+#for now I didn't compile windows version
+list(APPEND external_static_library "farmhash/lib/libfarmhash")
+endif (WIN32)
+
+target_link_libraries(tf_core_lib tf_protoc)
+
+foreach(lib ${external_static_library})
+    target_link_libraries(tf_core_lib debug "${tensorflow_root_dir}/external/${lib}d.${static_lib_ext}")
+    target_link_libraries(tf_core_lib optimized "${tensorflow_root_dir}/external/${lib}.${static_lib_ext}")
+endforeach(lib ${})
 
 if (NOT WIN32)
 find_package (Threads)

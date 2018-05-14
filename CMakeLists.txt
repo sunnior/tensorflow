@@ -36,6 +36,8 @@ include_directories(
 )
 
 include("cmake/tf_core_lib.cmake")
+include("cmake/tf_core_lib_tests.cmake")
 include("cmake/tf_proto_text.cmake")
 include("cmake/tf_core_framework.cmake")
-include("cmake/tf_core_tests.cmake")
+include("cmake/tf_core_kernels.cmake")
+include("cmake/tf_core_framework_tests.cmake")
