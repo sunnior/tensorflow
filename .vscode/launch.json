@@ -44,10 +44,10 @@
             ]
         },
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) test_framework",
             "type": "cppdbg",
             "request": "launch",
-            "program": "enter program name, for example ${workspaceFolder}/a.out",
+            "program": "${workspaceFolder}/build/test_framework",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
