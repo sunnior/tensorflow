@@ -172,7 +172,11 @@ void StrAppend(string *result, const AlphaNum &a, const AlphaNum &b) {
   DCHECK_NO_OVERLAP(*result, b);
   string::size_type old_size = result->size();
   gtl::STLStringResizeUninitialized(result, old_size + a.size() + b.size());
+#if defined(PLATFORM_WINDOWS)
+  char *const begin = (result->size() == 0) ? nullptr : &*result->begin();
+#else
   char *const begin = &*result->begin();
+#endif
   char *out = Append2(begin + old_size, a, b);
   DCHECK_EQ(out, begin + result->size());
 }

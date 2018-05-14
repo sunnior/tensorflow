@@ -28,6 +28,12 @@ namespace testing {
 #if defined(PLATFORM_GOOGLE)
 string TmpDir() { return FLAGS_test_tmpdir; }
 int RandomSeed() { return FLAGS_test_random_seed; }
+#elif defined(PLATFORM_WINDOWS)
+string TmpDir() {
+    return "test_dir"; 
+}
+
+int RandomSeed() { return 0; }
 #else
 string TmpDir() {
   // 'bazel test' sets TEST_TMPDIR

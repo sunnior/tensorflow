@@ -45,6 +45,11 @@ file(GLOB tf_core_lib_test_platform_posix_srcs
 list(APPEND tf_core_lib_test_platform_srcs ${tf_core_lib_test_platform_posix_srcs})
 endif(WIN32)
 
+if (WIN32)
+#vs compiler cannot pass this.
+list(REMOVE_ITEM tf_core_lib_test_srcs "${tensorflow_source_dir}/tensorflow/core/lib/gtl/optional_test.cc")
+endif (WIN32)
+
 
 add_executable(test_lib ${tf_core_lib_test_srcs})
 add_executable(test_lib_platform ${tf_core_lib_test_platform_srcs})

@@ -58,11 +58,15 @@ limitations under the License.
 
 // Control visiblity outside .so
 #if defined(COMPILER_MSVC)
+#ifdef TF_WIN_STATIC_LIBRARY
+#define TF_EXPORT
+#else
 #ifdef TF_COMPILE_LIBRARY
 #define TF_EXPORT __declspec(dllexport)
 #else
 #define TF_EXPORT __declspec(dllimport)
 #endif  // TF_COMPILE_LIBRARY
+#endif
 #else
 #define TF_EXPORT __attribute__((visibility("default")))
 #endif  // COMPILER_MSVC

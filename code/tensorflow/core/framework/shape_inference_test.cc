@@ -185,7 +185,7 @@ TEST_F(ShapeInferenceTest, AttachContext) {
   // Error when a constant tensor value was requested.
   {
     Tensor input_t =
-        ::tensorflow::test::AsTensor<float>({1.1, 2.2, 3.3, 4.4, 5.5});
+        ::tensorflow::test::AsTensor<float>({1.1f, 2.2f, 3.3f, 4.4f, 5.5f});
     InferenceContext c(kVersion, &def, MakeOpDef(2, 2),
                        {S({1, 2, 3}), S({4, 5})}, {nullptr, &input_t}, {}, {});
     TF_ASSERT_OK(c.construction_status());

@@ -170,11 +170,29 @@ string TypeNameVariant(const T& value) {
 template <typename C, typename = void>
 struct has_debug_string : std::false_type {};
 
+
+#if defined(PLATFORM_WINDOWS)
+template<typename T1, typename T2>
+struct fix_is_same
+{
+    static const bool value = std::is_same<T1, T2>::value;
+};
+
+template <typename C>
+struct has_debug_string<
+    C, typename std::enable_if<fix_is_same<
+    decltype(std::declval<C>().DebugString()), string>::value>::type>
+    : std::true_type {};
+
+#else
+
 template <typename C>
 struct has_debug_string<
     C, typename std::enable_if<std::is_same<
            decltype(std::declval<C>().DebugString()), string>::value>::type>
     : std::true_type {};
+
+#endif
 
 template <typename C, typename = void>
 struct can_strcat : std::false_type {};
