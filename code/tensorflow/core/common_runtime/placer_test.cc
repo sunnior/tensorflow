@@ -123,9 +123,9 @@ REGISTER_OP("TestAdd").Input("a: float").Input("b: float").Output("o: float");
 REGISTER_KERNEL_BUILDER(Name("TestAdd").Device("FakeCPU"), DummyOp);
 REGISTER_KERNEL_BUILDER(Name("TestAdd").Device("FakeGPU"), DummyOp);
 
-REGISTER_OP("TestRelu").Input("i: float").Output("o: float");
-REGISTER_KERNEL_BUILDER(Name("TestRelu").Device("FakeCPU"), DummyOp);
-REGISTER_KERNEL_BUILDER(Name("TestRelu").Device("FakeGPU"), DummyOp);
+REGISTER_OP("TestReluPlacer").Input("i: float").Output("o: float");
+REGISTER_KERNEL_BUILDER(Name("TestReluPlacer").Device("FakeCPU"), DummyOp);
+REGISTER_KERNEL_BUILDER(Name("TestReluPlacer").Device("FakeGPU"), DummyOp);
 
 REGISTER_OP("ReluCPU").Input("i: float").Output("o: float");
 REGISTER_KERNEL_BUILDER(Name("ReluCPU").Device("FakeCPU"), DummyOp);
@@ -143,8 +143,8 @@ REGISTER_KERNEL_BUILDER(Name("AssignCPU").Device("FakeCPU"), DummyOp);
 REGISTER_OP("AssignGPU").Input("i: Ref(float)").Input("v: float");
 REGISTER_KERNEL_BUILDER(Name("AssignGPU").Device("FakeGPU"), DummyOp);
 
-REGISTER_OP("TestInput").Output("a: float").Output("b: float");
-REGISTER_KERNEL_BUILDER(Name("TestInput").Device("FakeCPU"), DummyOp);
+REGISTER_OP("TestInputPlacer").Output("a: float").Output("b: float");
+REGISTER_KERNEL_BUILDER(Name("TestInputPlacer").Device("FakeCPU"), DummyOp);
 
 // Op producing an output that can be placed on CPU or GPU.
 REGISTER_OP("TestCPUGPUOutput").Output("a: float");
@@ -273,9 +273,9 @@ TEST_F(PlacerTest, TestNoConstraints) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
-    ops::UnaryOp("TestRelu", ops::NodeOut(input, 0), b.opts().WithName("n1"));
-    ops::UnaryOp("TestRelu", ops::NodeOut(input, 1), b.opts().WithName("n2"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
+    ops::UnaryOp("TestReluPlacer", ops::NodeOut(input, 0), b.opts().WithName("n1"));
+    ops::UnaryOp("TestReluPlacer", ops::NodeOut(input, 1), b.opts().WithName("n2"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -292,7 +292,7 @@ TEST_F(PlacerTest, TestDeviceTypeConstraints) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* var_cpu = ops::SourceOp("VariableCPU", b.opts().WithName("var_cpu"));
     ops::BinaryOp("AssignCPU", var_cpu, input, b.opts().WithName("assign_cpu"));
     Node* var_gpu = ops::SourceOp("VariableGPU", b.opts().WithName("var_gpu"));
@@ -422,7 +422,7 @@ TEST_F(PlacerTest, TestPartialSpec) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in").WithDevice("/job:a"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in").WithDevice("/job:a"));
     ops::SourceOp("TestVariable",
                   b.opts().WithName("var").WithDevice("/job:a"));
     TF_EXPECT_OK(BuildGraph(b, &g));
@@ -440,7 +440,7 @@ TEST_F(PlacerTest, TestAssignedDevicePreserved) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -458,7 +458,7 @@ TEST_F(PlacerTest, TestPartialSpecGpuToCpu) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput",
+    ops::SourceOp("TestInputPlacer",
                   b.opts().WithName("in").WithDevice("/device:fakegpu:0"));
     ops::SourceOp("TestVariable",
                   b.opts().WithName("var").WithDevice("/device:fakegpu:0"));
@@ -480,7 +480,7 @@ TEST_F(PlacerTest, TestAssignedGpuDeviceToCpuDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -492,7 +492,7 @@ TEST_F(PlacerTest, TestAssignedGpuDeviceToCpuDevice) {
   EXPECT_TRUE(str_util::StrContains(
       s.error_message(),
       "Assigned device '/job:a/replica:0/task:0/device:fakegpu:0' "
-      "does not have registered OpKernel support for TestInput"));
+      "does not have registered OpKernel support for TestInputPlacer"));
 }
 
 // Test that graphs with reference connections are correctly placed.
@@ -506,7 +506,7 @@ Status PlacerTest::ReferenceTestHelper(const string& variable_op_type,
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     // Build ten variable-and-assignment pairs.
     for (int i = 0; i < 10; ++i) {
       Node* var = ops::SourceOp(variable_op_type,
@@ -582,7 +582,7 @@ TEST_F(PlacerTest, TestResourceHandle) {
     Graph g(OpRegistry::Global());
     {  // Scope for temporary variables used to construct g.
       GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-      Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+      Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
       Node* var = ops::SourceOp(var_op_name, b.opts().WithName("var"));
       ops::BinaryOp(use_op_name, var, input, b.opts().WithName("assign"));
       TF_EXPECT_OK(BuildGraph(b, &g));
@@ -701,15 +701,15 @@ TEST_F(PlacerTest, TestColocationGroup) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* colocated_with_input = ops::UnaryOp(
-        "TestRelu", input,
+        "TestReluPlacer", input,
         b.opts().WithName("colocated_1").WithAttr("_class", {"loc:@in"}));
 
-    // This will not be colocated with the input because TestInput is
-    // only availbale on CPU and TestRelu will default to GPU.
+    // This will not be colocated with the input because TestInputPlacer is
+    // only availbale on CPU and TestReluPlacer will default to GPU.
     Node* not_colocated_with_input =
-        ops::UnaryOp("TestRelu", input, b.opts().WithName("foo"));
+        ops::UnaryOp("TestReluPlacer", input, b.opts().WithName("foo"));
     CHECK(colocated_with_input);
     CHECK(not_colocated_with_input);
     TF_EXPECT_OK(BuildGraph(b, &g));
@@ -724,12 +724,12 @@ TEST_F(PlacerTest, TestMultipleColocationGroups) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* colocated_with_input = ops::UnaryOp(
-        "TestRelu", input,
+        "TestReluPlacer", input,
         b.opts().WithName("colocated_1").WithAttr("_class", {"loc:@in"}));
     Node* colocated_with_input_and_other =
-        ops::UnaryOp("TestRelu", input,
+        ops::UnaryOp("TestReluPlacer", input,
                      b.opts().WithName("foo").WithAttr(
                          "_class", {"loc:@in", "loc:@colocated_1"}));
     CHECK(colocated_with_input);
@@ -746,7 +746,7 @@ TEST_F(PlacerTest, TestInvalidMultipleColocationGroups) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* colocated_with_input = ops::UnaryOp(
         "ReluCPU", input,
         b.opts().WithName("colocated_1").WithAttr("_class", {"loc:@in"}));
@@ -771,7 +771,7 @@ TEST_F(PlacerTest, TestColocationGroupWithReferenceConnections) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* var1 = ops::SourceOp("VariableCPU", b.opts().WithName("var1"));
     Node* var2 = ops::SourceOp("VariableCPU", b.opts().WithName("var2"));
 
@@ -798,7 +798,7 @@ TEST_F(PlacerTest, TestColocationGroupWithUnsatisfiableReferenceConnections) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
 
     Node* var1 = ops::SourceOp("VariableCPU", b.opts().WithName("var1"));
     Node* var2 = ops::SourceOp("VariableCPU", b.opts().WithName("var2"));
@@ -836,7 +836,7 @@ TEST_F(PlacerTest, TestColocationAndReferenceConnections) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     for (int i = 0; i < 10; ++i) {
       // Declare ten variable and assignment pairs.
       Node* var = ops::SourceOp("TestVariable",
@@ -881,7 +881,7 @@ TEST_F(PlacerTest, TestEmptyDeviceSet) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -898,7 +898,7 @@ TEST_F(PlacerTest, TestHeterogeneousDeviceSetFailure) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    Node* in = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* in = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     Node* var = ops::SourceOp("VariableGPU", b.opts().WithName("var"));
     ops::BinaryOp("TestAssign", var, in,
                   b.opts().WithName("assign").WithDevice("/job:b/task:1"));
@@ -933,7 +933,7 @@ TEST_F(PlacerTest, TestUnknownDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in").WithDevice("/job:foo"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in").WithDevice("/job:foo"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -948,7 +948,7 @@ TEST_F(PlacerTest, TestUnknownMergedDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in").WithDevice("/job:foo"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in").WithDevice("/job:foo"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -963,7 +963,7 @@ TEST_F(PlacerTest, TestUnknownAssignedDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -1023,7 +1023,7 @@ TEST_F(PlacerTest, TestMalformedDeviceSpecification) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in").WithDevice("/foo:bar"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in").WithDevice("/foo:bar"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -1038,7 +1038,7 @@ TEST_F(PlacerTest, TestMalformedAssignedDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -1056,7 +1056,7 @@ TEST_F(PlacerTest, TestNonUniqueAssignedDevice) {
   Graph g(OpRegistry::Global());
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
-    ops::SourceOp("TestInput", b.opts().WithName("in"));
+    ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }
 
@@ -1198,7 +1198,7 @@ TEST_F(PlacerTest, TestUnsatisfiableConstraintWithReferenceConnections) {
   {  // Scope for temporary variables used to construct g.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
     Node* var = ops::SourceOp("VariableGPU", b.opts().WithName("var"));
-    Node* input = ops::SourceOp("TestInput", b.opts().WithName("in"));
+    Node* input = ops::SourceOp("TestInputPlacer", b.opts().WithName("in"));
     ops::BinaryOp("AssignCPU", var, input, b.opts().WithName("assign"));
     TF_EXPECT_OK(BuildGraph(b, &g));
   }

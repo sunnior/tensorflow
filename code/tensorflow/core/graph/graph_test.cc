@@ -643,7 +643,7 @@ TEST_F(GraphTest, AddFunctionLibrary) {
             "because it already has gradient function 'Undefined'");
 }
 
-REGISTER_OP("Input").Output("o: float");
+REGISTER_OP("InputGraph").Output("o: float");
 REGISTER_OP("In2Out1").Input("a: float").Input("b: float").Output("o: float");
 
 static void BM_InEdgeIteration(int iters, int num_nodes) {

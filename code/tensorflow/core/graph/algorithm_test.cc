@@ -33,9 +33,9 @@ limitations under the License.
 namespace tensorflow {
 namespace {
 
-REGISTER_OP("TestParams").Output("o: float");
-REGISTER_OP("TestInput").Output("a: float").Output("b: float");
-REGISTER_OP("TestMul").Input("a: float").Input("b: float").Output("o: float");
+REGISTER_OP("TestParamsAlgorithm").Output("o: float");
+REGISTER_OP("TestInputAlgorithm").Output("a: float").Output("b: float");
+REGISTER_OP("TestMulAlgorithm").Input("a: float").Input("b: float").Output("o: float");
 
 // Compares that the order of nodes in 'inputs' respects the
 // pair orders described in 'ordered_pairs'.
@@ -72,14 +72,14 @@ bool ExpectBefore(const std::vector<std::pair<string, string>>& ordered_pairs,
 TEST(AlgorithmTest, ReversePostOrder) {
   GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
   using namespace ::tensorflow::ops;  // NOLINT(build/namespaces)
-  Node* w1 = SourceOp("TestParams", b.opts().WithName("W1"));
-  Node* w2 = SourceOp("TestParams", b.opts().WithName("W2"));
+  Node* w1 = SourceOp("TestParamsAlgorithm", b.opts().WithName("W1"));
+  Node* w2 = SourceOp("TestParamsAlgorithm", b.opts().WithName("W2"));
   Node* input =
-      SourceOp("TestInput", b.opts().WithName("input").WithControlInput(w1));
-  Node* t1 = BinaryOp("TestMul", w1, {input, 1}, b.opts().WithName("t1"));
-  BinaryOp("TestMul", w1, {input, 1},
+      SourceOp("TestInputAlgorithm", b.opts().WithName("input").WithControlInput(w1));
+  Node* t1 = BinaryOp("TestMulAlgorithm", w1, {input, 1}, b.opts().WithName("t1"));
+  BinaryOp("TestMulAlgorithm", w1, {input, 1},
            b.opts().WithName("t2").WithControlInput(t1));
-  BinaryOp("TestMul", w2, {input, 1}, b.opts().WithName("t3"));
+  BinaryOp("TestMulAlgorithm", w2, {input, 1}, b.opts().WithName("t3"));
 
   Graph g(OpRegistry::Global());
   TF_ASSERT_OK(GraphDefBuilderToGraph(b, &g));
@@ -124,20 +124,20 @@ TEST(AlgorithmTest, ReversePostOrderStable) {
     // nondeterminism by enforcing an ordering based on node ids.
     GraphDefBuilder b(GraphDefBuilder::kFailImmediately);
     string error;
-    Node* w1 = SourceOp("TestParams", b.opts().WithName("W1"));
+    Node* w1 = SourceOp("TestParamsAlgorithm", b.opts().WithName("W1"));
     Node* input =
-        SourceOp("TestInput", b.opts().WithName("input").WithControlInput(w1));
-    BinaryOp("TestMul", w1, {input, 1}, b.opts().WithName("t2"));
+        SourceOp("TestInputAlgorithm", b.opts().WithName("input").WithControlInput(w1));
+    BinaryOp("TestMulAlgorithm", w1, {input, 1}, b.opts().WithName("t2"));
     // Insert different number of nodes between the allocation of t2 and t3,
     // this creates enough entropy in the memory distance between t2 and t3 thus
     // forces them to have randomized ordering had stable DFS was not
     // implemented correctly.
     for (int64 j = 0; j < i; ++j) {
-      BinaryOp("TestMul", w1, {input, 1},
+      BinaryOp("TestMulAlgorithm", w1, {input, 1},
                b.opts().WithName(strings::StrCat("internal", j)));
     }
 
-    BinaryOp("TestMul", w1, {input, 1}, b.opts().WithName("t3"));
+    BinaryOp("TestMulAlgorithm", w1, {input, 1}, b.opts().WithName("t3"));
 
     Graph g(OpRegistry::Global());
     TF_ASSERT_OK(GraphDefBuilderToGraph(b, &g));

@@ -179,12 +179,12 @@ Status Scalars(shape_inference::InferenceContext* c) {
 }
 
 REGISTER_OP("ABC");
-REGISTER_OP("TestParams").Output("o: float").SetShapeFn(Scalars);
+REGISTER_OP("TestParamsGraph").Output("o: float").SetShapeFn(Scalars);
 REGISTER_OP("TestInput")
     .Output("a: float")
     .Output("b: float")
     .SetShapeFn(Scalars);
-REGISTER_OP("TestMul")
+REGISTER_OP("TestMulGraph")
     .Input("a: float")
     .Input("b: float")
     .Output("o: float")
@@ -234,18 +234,18 @@ TEST_F(GraphConstructorTest, InvalidNodeName) {
 
 TEST_F(GraphConstructorTest, InvalidSourceNodeName) {
   ExpectError(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: 'W999' input: 'input' }",
+      "node { name: 't1' op: 'TestMulGraph' input: 'W999' input: 'input' }",
 
       {"Unknown input node", "W999"});
 }
 
 TEST_F(GraphConstructorTest, InvalidSourceNodeIndex) {
   ExpectError(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: [ 'W1:1', 'input:1' ] }",
+      "node { name: 't1' op: 'TestMulGraph' input: [ 'W1:1', 'input:1' ] }",
 
       {"Connecting to invalid output 1 of source node W1"});
 }
@@ -253,8 +253,8 @@ TEST_F(GraphConstructorTest, InvalidSourceNodeIndex) {
 TEST_F(GraphConstructorTest, GraphWithCycle) {
   ExpectError(
       "node { name: 'input' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: [ 'input:0', 't2' ] }"
-      "node { name: 't2' op: 'TestMul' input: [ 'input:1', 't1' ] }",
+      "node { name: 't1' op: 'TestMulGraph' input: [ 'input:0', 't2' ] }"
+      "node { name: 't2' op: 'TestMulGraph' input: [ 'input:1', 't1' ] }",
 
       {"cycle"});
 }
@@ -854,9 +854,9 @@ TEST_F(GraphConstructorTest, BadVersion) {
 
 TEST_F(GraphConstructorTest, SimpleModel) {
   ExpectOK(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }");
+      "node { name: 't1' op: 'TestMulGraph' input: [ 'W1', 'input:1' ] }");
   EXPECT_TRUE(HasNode("W1"));
   EXPECT_TRUE(HasNode("input"));
   EXPECT_TRUE(HasNode("t1"));
@@ -866,10 +866,10 @@ TEST_F(GraphConstructorTest, SimpleModel) {
 
 TEST_F(GraphConstructorTest, SimpleModelWithControlEdges) {
   ExpectOK(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' input: [ '^W1' ] }"
-      "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
-      "node { name: 't2' op: 'TestMul' input: [ 'W1', 'input:1', '^t1' ] }");
+      "node { name: 't1' op: 'TestMulGraph' input: [ 'W1', 'input:1' ] }"
+      "node { name: 't2' op: 'TestMulGraph' input: [ 'W1', 'input:1', '^t1' ] }");
   EXPECT_TRUE(HasNode("W1"));
   EXPECT_TRUE(HasNode("input"));
   EXPECT_TRUE(HasNode("t1"));
@@ -884,10 +884,10 @@ TEST_F(GraphConstructorTest, SimpleModelWithControlEdges) {
 
 TEST_F(GraphConstructorTest, Error_ControlEdgeBeforeRealInput) {
   ExpectError(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' input: [ '^W1' ] }"
-      "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
-      "node { name: 't2' op: 'TestMul' input: [ 'W1', '^t1', 'input:1' ] }",
+      "node { name: 't1' op: 'TestMulGraph' input: [ 'W1', 'input:1' ] }"
+      "node { name: 't2' op: 'TestMulGraph' input: [ 'W1', '^t1', 'input:1' ] }",
       {"Node 't2': Control dependencies must come after regular dependencies"});
 }
 
@@ -906,8 +906,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef) {
 
   bool parsed = protobuf::TextFormat::ParseFromString(
       R"EOF(
-        node { name: "A" op: "TestParams" }
-        node { name: "X" op: "TestParams" }
+        node { name: "A" op: "TestParamsGraph" }
+        node { name: "X" op: "TestParamsGraph" }
         node {
           name: "B"
           op: "TestOneInputTwoOutputs"
@@ -925,7 +925,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef) {
         }
         node {
           name: "D"
-          op: "TestMul"
+          op: "TestMulGraph"
           input: "B:0"
           input: "C:0"
         })EOF",
@@ -1180,8 +1180,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMap) {
   ExpectOK(
       R"EOF(
       node { name: 'new_input' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
       )EOF",
       opts, &refiner);
 
@@ -1227,9 +1227,9 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithPrefix) {
       R"EOF(
       node { name: 'input' op: 'TestInput' }
       node { name: 'unmapped_input' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'input:0', 'input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
-      node { name: 't3' op: 'TestMul' input: [ 'unmapped_input:0',
+      node { name: 't1' op: 'TestMulGraph' input: [ 'input:0', 'input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
+      node { name: 't3' op: 'TestMulGraph' input: [ 'unmapped_input:0',
                                                'unmapped_input:1' ] }
       )EOF",
       opts, &refiner);
@@ -1272,7 +1272,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithControlEdges) {
   ShapeRefiner refiner(TF_GRAPH_DEF_VERSION, graph_.op_registry());
 
   // Populate graph with node we'll use in input map
-  ExpectOK("node { name: 'W1' op: 'TestParams' }", ImportGraphDefOptions(),
+  ExpectOK("node { name: 'W1' op: 'TestParamsGraph' }", ImportGraphDefOptions(),
            &refiner);
 
   // Create input_map containing control edges and use it to import more nodes
@@ -1282,8 +1282,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithControlEdges) {
   opts.input_map[TensorId("W3", kControlSlot)] = TensorId("W1", kControlSlot);
   ExpectOK(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
-      node { name: 'W3' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
+      node { name: 'W3' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' input: [ '^W2' ] }
       node { name: 't1' op: 'TestOneInputTwoOutputs' input: [ 'W2' ] }
       node { name: 't2' op: 'TestOneInputTwoOutputs'
@@ -1318,7 +1318,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithControlEdges) {
   opts.input_map[TensorId("W1", kControlSlot)] = TensorId("W1", kControlSlot);
   ExpectOK(
       R"EOF(
-      node { name: 'W1' op: 'TestParams' }
+      node { name: 'W1' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' input: [ '^W1' ] }
       node { name: 't1' op: 'TestOneInputTwoOutputs' input: [ 'W1' ] }
       )EOF",
@@ -1337,7 +1337,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithBadControlEdge) {
   ShapeRefiner refiner(TF_GRAPH_DEF_VERSION, graph_.op_registry());
 
   // Populate graph with node we'll use in input map
-  ExpectOK("node { name: 'W1' op: 'TestParams' }", ImportGraphDefOptions(),
+  ExpectOK("node { name: 'W1' op: 'TestParamsGraph' }", ImportGraphDefOptions(),
            &refiner);
 
   // Create input_map with bad control edge mapping
@@ -1345,7 +1345,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithBadControlEdge) {
   opts.input_map[TensorId("W2", Graph::kControlSlot)] = TensorId("W1", 0);
   ExpectError(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' input: [ '^W2' ] }
       )EOF",
       opts,
@@ -1357,7 +1357,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithBadControlEdge) {
   opts.input_map[TensorId("W2", 0)] = TensorId("W1", Graph::kControlSlot);
   ExpectError(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' input: [ '^W2' ] }
       )EOF",
       opts,
@@ -1378,7 +1378,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithInvalidNodeIndex) {
   ExpectError(
       R"EOF(
       node { name: 'input2' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'input2:0', 'input2:1' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'input2:0', 'input2:1' ] }
       )EOF",
       opts,
       {"Node 't1': Connecting to invalid output 3 of source node input1 which "
@@ -1390,7 +1390,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithMissingEntries) {
   ShapeRefiner refiner(TF_GRAPH_DEF_VERSION, graph_.op_registry());
 
   // Populate graph with node we'll use in input map
-  ExpectOK("node { name: 'W1' op: 'TestParams' }", ImportGraphDefOptions(),
+  ExpectOK("node { name: 'W1' op: 'TestParamsGraph' }", ImportGraphDefOptions(),
            &refiner);
 
   // Create input_map referencing node that doesn't exist in graph
@@ -1399,7 +1399,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithMissingEntries) {
   opts.input_map[TensorId("W2", kControlSlot)] = TensorId("DNE", kControlSlot);
   ExpectError(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' input: [ '^W2' ] }
       )EOF",
       opts,
@@ -1426,7 +1426,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapDuplicateNodeNames) {
   ExpectError(
       R"EOF(
       node { name: 'new_input' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
       )EOF",
       opts,
       {"cannot resolve input_map because multiple nodes exist with name 'dup'"},
@@ -1440,7 +1440,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapMissingUnusedKeys) {
   ImportGraphDefOptions opts;
   ImportGraphDefResults results;
   ExpectOK(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' }",
       opts, &refiner, &results);
   EXPECT_TRUE(results.missing_unused_input_map_keys.empty());
@@ -1448,7 +1448,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapMissingUnusedKeys) {
   // Non-empty missing_unused_input_map_keys
   results.missing_unused_input_map_keys.push_back(TensorId());
   ExpectError(
-      "node { name: 'W2' op: 'TestParams' }", opts,
+      "node { name: 'W2' op: 'TestParamsGraph' }", opts,
       {"All fields in results argument to ImportGraphDef() must be empty."},
       &refiner, &results);
 
@@ -1466,10 +1466,10 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapMissingUnusedKeys) {
   opts.input_map[TensorId("t1", 0)] = TensorId("W1", 0);
   ExpectOK(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
       node { name: 'new_input' op: 'TestInput' input: [ '^W2' ] }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
       )EOF",
       opts, &refiner, &results);
 
@@ -1495,9 +1495,9 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapMissingUnusedKeys) {
   results = ImportGraphDefResults();
   ExpectOK(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
       node { name: 'new_input' op: 'TestInput' input: [ '^W2' ] }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
       )EOF",
       opts, &refiner, &results);
 
@@ -1520,8 +1520,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_InputMapWithUnboundInput) {
   // new_input exists in input_map but not in the graph being imported.
   ExpectOK(
       R"EOF(
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
       )EOF",
       opts, &refiner);
 
@@ -1558,8 +1558,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_SkipMappedNodes_FullyMapped) {
   ExpectOK(
       R"EOF(
       node { name: 'new_input' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
       )EOF",
       opts, &refiner);
 
@@ -1597,8 +1597,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_SkipMappedNodes_NotFullyMapped) {
   ExpectOK(
       R"EOF(
       node { name: 'new_input' op: 'TestInput' }
-      node { name: 't1' op: 'TestMul' input: [ 'new_input:0', 'new_input:1' ] }
-      node { name: 't2' op: 'TestMul' input: [ 't1:0', 't1:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'new_input:0', 'new_input:1' ] }
+      node { name: 't2' op: 'TestMulGraph' input: [ 't1:0', 't1:0' ] }
       )EOF",
       opts, &refiner);
 
@@ -1632,7 +1632,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ReturnTensors) {
   ImportGraphDefResults results;
   ExpectOK(
       "node { name: 'input' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: ['input:0', 'input:1'] }",
+      "node { name: 't1' op: 'TestMulGraph' input: ['input:0', 'input:1'] }",
       opts, &refiner, &results);
 
   // Sanity checks
@@ -1703,7 +1703,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ReturnTensorsErrors) {
 
   // Requesting tensor that isn't in graph def
   results.return_tensors.clear();
-  ExpectError("node { name: 'W1' op: 'TestParams' }", opts,
+  ExpectError("node { name: 'W1' op: 'TestParamsGraph' }", opts,
               {"Requested return tensor 'new_input:0' not found in graph def"},
               nullptr, &results);
 
@@ -1726,7 +1726,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ReturnNodes) {
   ExpectOK(
       "node { name: 'input' op: 'TestInput' }"
       "node { name: 'input2' op: 'TestInput' }"
-      "node { name: 't1' op: 'TestMul' input: ['input:0', 'input2:1'] }",
+      "node { name: 't1' op: 'TestMulGraph' input: ['input:0', 'input2:1'] }",
       opts, &refiner, &results);
 
   // Sanity checks
@@ -1787,7 +1787,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ReturnNodesErrors) {
 
   // Requesting node that isn't in graph def
   results.return_nodes.clear();
-  ExpectError("node { name: 'W1' op: 'TestParams' }", opts,
+  ExpectError("node { name: 'W1' op: 'TestParamsGraph' }", opts,
               {"Requested return node 'new_input' not found in graph def"},
               nullptr, &results);
 
@@ -2251,8 +2251,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ControlDeps) {
 
   // Populate graph with nodes we'll use in control deps and input map
   ExpectOK(
-      "node { name: 'W1' op: 'TestParams' }"
-      "node { name: 'W2' op: 'TestParams' }",
+      "node { name: 'W1' op: 'TestParamsGraph' }"
+      "node { name: 'W2' op: 'TestParamsGraph' }",
       ImportGraphDefOptions(), &refiner);
 
   ImportGraphDefOptions opts;
@@ -2264,13 +2264,13 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ControlDeps) {
   opts.input_map[TensorId("W3", -1)] = TensorId("W2", -1);
   ExpectOK(
       R"EOF(
-      node { name: 'W2' op: 'TestParams' }
-      node { name: 'W3' op: 'TestParams' }
+      node { name: 'W2' op: 'TestParamsGraph' }
+      node { name: 'W3' op: 'TestParamsGraph' }
       node { name: 'input' op: 'TestInput' }
       node { name: 'input2' op: 'TestInput' input: [ '^W2' ] }
       node { name: 'input3' op: 'TestInput' input: [ '^W2', '^W3' ] }
-      node { name: 't1' op: 'TestMul' input: [ 'input:0', 'input:1' ] }
-      node { name: 't2' op: 'TestMul'
+      node { name: 't1' op: 'TestMulGraph' input: [ 'input:0', 'input:1' ] }
+      node { name: 't2' op: 'TestMulGraph'
              input: [ 'input:0', 'input:1', '^W2', '^W3' ] }
       )EOF",
       opts, &refiner);
@@ -2359,7 +2359,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ControlDepsWithCycle) {
 
   // Populate graph with nodes we'll use in control deps and input map
   ExpectOK(
-      "node { name: 'W1' op: 'TestParams' }"
+      "node { name: 'W1' op: 'TestParamsGraph' }"
       "node { name: 'input' op: 'TestInput' }",
       ImportGraphDefOptions(), &refiner);
 
@@ -2377,7 +2377,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ControlDepsWithCycle) {
       node { name: 'merge' op: 'Merge' input: [ 'new_input:0', 'next:0' ]
              attr { key: "N" value: { i: 2 } }
              attr { key: "T" value: { type: DT_FLOAT } } }
-      node { name: 't1' op: 'TestMul' input: [ 'merge:0', 'merge:0' ] }
+      node { name: 't1' op: 'TestMulGraph' input: [ 'merge:0', 'merge:0' ] }
       node { name: 'next' op: 'NextIteration' input: ['t1:0']
              attr { key: "T" value: { type: DT_FLOAT } } }
       )EOF",
@@ -2418,14 +2418,14 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ControlDepsErrors) {
   // Control dep that isn't in graph def
   ImportGraphDefOptions opts;
   opts.control_dependencies.push_back("W1");
-  ExpectError("node { name: 'W1' op: 'TestParams' }", opts,
+  ExpectError("node { name: 'W1' op: 'TestParamsGraph' }", opts,
               {"node 'W1' in control_dependencies does not exist in graph"});
 }
 
 TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
   GraphDef def;
   TF_EXPECT_OK(
-      NodeDefBuilder("scope/A", "TestParams").Finalize(def.add_node()));
+      NodeDefBuilder("scope/A", "TestParamsGraph").Finalize(def.add_node()));
   ImportGraphDefOptions opts;
   const string& source = graph_.FindNodeId(Graph::kSourceId)->name();
   const string& sink = graph_.FindNodeId(Graph::kSinkId)->name();
@@ -2458,7 +2458,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
 
   GraphDef bad_def;
   ASSERT_TRUE(protobuf::TextFormat::ParseFromString(
-      "node{name:'!B' op:'TestParams'}", &bad_def));
+      "node{name:'!B' op:'TestParamsGraph'}", &bad_def));
   EXPECT_IMPORT_FAILURE(bad_def, opts,
                         "Node '!B': Node name contains invalid characters");
 
@@ -2479,7 +2479,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
 
   bool parsed = protobuf::TextFormat::ParseFromString(
       R"EOF(
-      node{ name:"Root" op:"TestParams" } # TestParams produces a float
+      node{ name:"Root" op:"TestParamsGraph" } # TestParamsGraph produces a float
       node{
         name:"Integer"
         op:"TestOneInputOneOutput"
@@ -2495,7 +2495,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
 
   parsed = protobuf::TextFormat::ParseFromString(
       R"EOF(
-      node{ name:"A" op:"TestParams" }
+      node{ name:"A" op:"TestParamsGraph" }
       node{ name:"B" op:"TestOneInputTwoOutputs" input:"A:1" }
       )EOF",
       &bad_def);
@@ -2506,8 +2506,8 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
 
   parsed = protobuf::TextFormat::ParseFromString(
       R"EOF(
-      node{ name:"A" op:"TestParams" }
-      node{ name:"B" op:"TestParams" }
+      node{ name:"A" op:"TestParamsGraph" }
+      node{ name:"B" op:"TestParamsGraph" }
       node{ name:"C" op:"TestOneInputTwoOutputs" input:"A" input:"B" }
       )EOF",
       &bad_def);
@@ -2522,7 +2522,7 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
       R"EOF(
       node{
         name:"A"
-        op:"TestParams"
+        op:"TestParamsGraph"
         attr{
           key:"_class"
           value{ list{ s:"loc:@B" } }
@@ -2535,13 +2535,13 @@ TEST_F(GraphConstructorTest, ImportGraphDef_ErrorsDoNoChangeTheGraph) {
 
   opts.prefix = "";
   ASSERT_TRUE(protobuf::TextFormat::ParseFromString(
-      "node{name:'scope/A' op:'TestParams'}", &bad_def));
+      "node{name:'scope/A' op:'TestParamsGraph'}", &bad_def));
   EXPECT_IMPORT_FAILURE(bad_def, opts,
                         "Node name 'scope/A' already exists in the Graph");
 
   parsed = protobuf::TextFormat::ParseFromString(
       R"EOF(
-      node { name: "A" op: "TestParams" }
+      node { name: "A" op: "TestParamsGraph" }
       node { name: "B" op: "L2Loss"
              input: "A:0"
              attr { key: "T" value { type: DT_FLOAT } }

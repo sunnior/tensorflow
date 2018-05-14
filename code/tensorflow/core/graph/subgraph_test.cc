@@ -142,7 +142,7 @@ class SubgraphTest : public ::testing::Test {
 };
 
 REGISTER_OP("TestParams").Output("o: float");
-REGISTER_OP("TestInput").Output("a: float").Output("b: float");
+REGISTER_OP("TestInputSubGraph").Output("a: float").Output("b: float");
 REGISTER_OP("TestRelu").Input("i: float").Output("o: float");
 REGISTER_OP("TestMul").Input("a: float").Input("b: float").Output("o: float");
 
@@ -150,7 +150,7 @@ TEST_F(SubgraphTest, Targets1) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -163,7 +163,7 @@ TEST_F(SubgraphTest, Targets2) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: 'W1' input: 'input:1' }"
       "node { name: 't2' op: 'TestMul' input: 'W2' input: 't1' }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -176,7 +176,7 @@ TEST_F(SubgraphTest, FedOutputs1) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -189,7 +189,7 @@ TEST_F(SubgraphTest, FedOutputs1_FunctionConvention) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -226,7 +226,7 @@ TEST_F(SubgraphTest, FedOutputs2_FunctionConvention) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -242,7 +242,7 @@ TEST_F(SubgraphTest, FetchOutputs1) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -256,7 +256,7 @@ TEST_F(SubgraphTest, FetchOutputs1_FunctionConvention) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -272,7 +272,7 @@ TEST_F(SubgraphTest, FetchOutputs2) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"
@@ -285,7 +285,7 @@ TEST_F(SubgraphTest, FetchOutputs2_FunctionConvention) {
   ExpectOK(
       "node { name: 'W1' op: 'TestParams' }"
       "node { name: 'W2' op: 'TestParams' }"
-      "node { name: 'input' op: 'TestInput' }"
+      "node { name: 'input' op: 'TestInputSubGraph' }"
       "node { name: 't1' op: 'TestMul' input: [ 'W1', 'input:1' ] }"
       "node { name: 't2' op: 'TestMul' input: [ 'W2', 't1' ] }"
       "node { name: 't3_a' op: 'TestRelu' input: 't2' }"

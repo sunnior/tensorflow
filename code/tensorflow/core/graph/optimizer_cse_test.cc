@@ -103,26 +103,26 @@ class OptimizerCSETest : public ::testing::Test {
   string original_;
 };
 
-REGISTER_OP("Input").Output("o: float").SetIsStateful();
+REGISTER_OP("InputOptimizer").Output("o: float").SetIsStateful();
 
 // Note that the "rules" in these tests are not meant to be logically correct
 TEST_F(OptimizerCSETest, Simple) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);D(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);D(Mul)|"
             "A->D;B->D:1");
 }
 
 TEST_F(OptimizerCSETest, Simple_ThreeEquivalent) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -130,14 +130,14 @@ TEST_F(OptimizerCSETest, Simple_ThreeEquivalent) {
       "node { name: 'E' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);E(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);E(Mul)|"
             "A->E;B->E:1");
 }
 
 TEST_F(OptimizerCSETest, Simple_WithFixups) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -145,20 +145,20 @@ TEST_F(OptimizerCSETest, Simple_WithFixups) {
       "node { name: 'E' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['C', 'D'] }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);D(Mul);E(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);D(Mul);E(Mul)|"
             "A->D;B->D:1;D->E;D->E:1");
 }
 
 TEST_F(OptimizerCSETest, Simple_Commutative) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['B', 'A'] }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);D(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);D(Mul)|"
             "A->D:1;B->D");
 }
 
@@ -167,8 +167,8 @@ static bool IsNotMultiply(const Node* n) { return n->type_string() != "Mul"; }
 // Like Simple_Commutative,
 TEST_F(OptimizerCSETest, Simple_Filtered) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -178,8 +178,8 @@ TEST_F(OptimizerCSETest, Simple_Filtered) {
 
 TEST_F(OptimizerCSETest, Simple_NotCommutative) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Sub' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Sub' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -189,8 +189,8 @@ TEST_F(OptimizerCSETest, Simple_NotCommutative) {
 
 TEST_F(OptimizerCSETest, NotEquivalent_Ops) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'D' op: 'Sub' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -201,8 +201,8 @@ TEST_F(OptimizerCSETest, NotEquivalent_Ops) {
 TEST_F(OptimizerCSETest, Simple_SameOps_SameAttrs1) {
   // Should still do CSE for ops with attrs if they match.
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] attr { key: 'shape'"
       "    value { shape: { dim: { size: 37 name: 'SAME_NAME' } } } } }"
@@ -210,7 +210,7 @@ TEST_F(OptimizerCSETest, Simple_SameOps_SameAttrs1) {
       " input: ['A', 'B'] attr { key: 'shape'"
       "    value { shape: { dim: { size: 37 name: 'SAME_NAME' } } } } }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);D(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);D(Mul)|"
             "A->D;B->D:1");
 }
 
@@ -218,8 +218,8 @@ TEST_F(OptimizerCSETest, Simple_SameOps_SameAttrs2) {
   // Should still do CSE for ops with attrs if they match, even if they
   // are not in the same order.
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B']"
       "    attr { key: 'a' value { i: 3 } }"
@@ -229,7 +229,7 @@ TEST_F(OptimizerCSETest, Simple_SameOps_SameAttrs2) {
       "    attr { key: 't' value { type: DT_INT32 } }"
       "    attr { key: 'a' value { i: 3 } } }");
   EXPECT_EQ(DoCSE(),
-            "A(Input);B(Input);D(Mul)|"
+            "A(InputOptimizer);B(InputOptimizer);D(Mul)|"
             "A->D;B->D:1");
 }
 
@@ -275,8 +275,8 @@ TEST_F(OptimizerCSETest, DifferentConstants) {
 
 TEST_F(OptimizerCSETest, SameOps_DifferentAttrs1) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B']"
       "    attr { key: 'a' value { i: 3 } }"
@@ -290,8 +290,8 @@ TEST_F(OptimizerCSETest, SameOps_DifferentAttrs1) {
 
 TEST_F(OptimizerCSETest, SameOps_DifferentAttrs2) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
       "node { name: 'C' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B']"
       "    attr { key: 'a' value { i: 3 } }"
@@ -305,9 +305,9 @@ TEST_F(OptimizerCSETest, SameOps_DifferentAttrs2) {
 
 TEST_F(OptimizerCSETest, NotEquivalent_Inputs) {
   InitGraph(
-      "node { name: 'A' op: 'Input'}"
-      "node { name: 'B' op: 'Input'}"
-      "node { name: 'C' op: 'Input'}"
+      "node { name: 'A' op: 'InputOptimizer'}"
+      "node { name: 'B' op: 'InputOptimizer'}"
+      "node { name: 'C' op: 'InputOptimizer'}"
       "node { name: 'D' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
       " input: ['A', 'B'] }"
       "node { name: 'E' op: 'Mul' attr { key: 'T' value { type: DT_FLOAT } }"
@@ -346,7 +346,7 @@ static void BM_CSE(int iters, int op_nodes) {
   testing::StopTiming();
   string s;
   for (int in = 0; in < 10; in++) {
-    s += strings::Printf("node { name: 'in%04d' op: 'Input'}", in);
+    s += strings::Printf("node { name: 'in%04d' op: 'InputOptimizer'}", in);
   }
   random::PhiloxRandom philox(301, 17);
   random::SimplePhilox rnd(&philox);
