@@ -6,6 +6,7 @@ project(tensorflow C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
+set(CMAKE_BUILD_TYPE "Release")
 
 set(tensorflow_root_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(tensorflow_source_dir "${tensorflow_root_dir}/code")

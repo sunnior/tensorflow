@@ -12,6 +12,13 @@ file(GLOB_RECURSE tf_core_lib_test_srcs
     "${tensorflow_source_dir}/tensorflow/core/lib/*test*.cc"
 )
 
+#seperate this test from lib test to avoid duplicate regestration
+file (GLOB tf_core_lib_monitoring_test_srcs
+    "${tensorflow_source_dir}/tensorflow/core/lib/monitoring/collection_registry_test.cc"
+)
+
+list(REMOVE_ITEM tf_core_lib_test_srcs ${tf_core_lib_monitoring_test_srcs})
+
 file(GLOB tf_core_lib_test_platform_srcs
     "${tensorflow_source_dir}/tensorflow/core/platform/fingerprint_test.cc",
     "${tensorflow_source_dir}/tensorflow/core/platform/integral_types_test.cc",
@@ -40,10 +47,12 @@ endif(WIN32)
 
 
 add_executable(test_lib ${tf_core_lib_test_srcs})
-target_link_libraries(test_lib test_main tf_core_lib)
-
 add_executable(test_lib_platform ${tf_core_lib_test_platform_srcs})
+add_executable(test_lib_monitoring ${tf_core_lib_monitoring_test_srcs})
+
 target_link_libraries(test_lib_platform test_main tf_core_lib)
+target_link_libraries(test_lib test_main tf_core_lib)
+target_link_libraries(test_lib_monitoring test_main tf_core_lib)
 
 #add_custom_command(
 #    TARGET test_lib_core 
