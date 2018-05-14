@@ -6,7 +6,7 @@ project(tensorflow C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
-set(CMAKE_BUILD_TYPE "Release")
+#set(CMAKE_BUILD_TYPE "Release")
 
 set(tensorflow_root_dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(tensorflow_source_dir "${tensorflow_root_dir}/code")
@@ -35,6 +35,7 @@ set(protobuf_static_library "${tensorflow_root_dir}/external/protobuf/lib/libpro
 set(zlib_static_library "${tensorflow_root_dir}/external/zlib/lib/libz.${static_lib_ext}")
 set(farmhash_static_library "${tensorflow_root_dir}/external/farmhash/lib/libfarmhash.${static_lib_ext}")
 
+include("cmake/tf_core_lib.cmake")
 include("cmake/tf_core_framework.cmake")
 include("cmake/tf_core_tests.cmake")
 include("cmake/tf_proto_text.cmake")

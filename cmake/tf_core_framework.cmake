@@ -1,78 +1,46 @@
-file(GLOB_RECURSE tf_core_lib_srcs
-    "${tensorflow_source_dir}/tensorflow/core/lib/*.h"
-    "${tensorflow_source_dir}/tensorflow/core/lib/*.cc"
-    "${tensorflow_source_dir}/tensorflow/core/public/*.h"
+file(GLOB_RECURSE tf_core_framework_srcs
+    "${tensorflow_source_dir}/tensorflow/core/framework/*.h"
+    "${tensorflow_source_dir}/tensorflow/core/framework/*.cc"
+    "${tensorflow_source_dir}/tensorflow/core/platform/variant_coding.h"
+    "${tensorflow_source_dir}/tensorflow/core/platform/variant_coding.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/edgeset.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/edgeset.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/graph.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/graph.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/graph_def_builder.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/graph_def_builder.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/node_builder.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/node_builder.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/tensor_id.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/tensor_id.cc"
+    "${tensorflow_source_dir}/tensorflow/core/graph/while_context.h"
+    "${tensorflow_source_dir}/tensorflow/core/graph/while_context.cc"
+    "${tensorflow_source_dir}/tensorflow/core/util/*.h"
+    "${tensorflow_source_dir}/tensorflow/core/util/*.cc"
+    "${tensorflow_source_dir}/tensorflow/core/common_runtime/session.cc"
+    "${tensorflow_source_dir}/tensorflow/core/common_runtime/session_factory.cc"
+    "${tensorflow_source_dir}/tensorflow/core/common_runtime/session_options.cc"
+    #"${tensorflow_source_dir}/tensorflow/contrib/tensorboard/db/*.cc"
+    #"${tensorflow_source_dir}/tensorflow/contrib/tensorboard/db/*.h"
+    "${tensorflow_source_dir}/public/*.h"
 )
 
-file(GLOB tf_core_platform_srcs
-    "${tensorflow_source_dir}/tensorflow/core/platform/*.h"
-    "${tensorflow_source_dir}/tensorflow/core/platform/*.cc"
-    "${tensorflow_source_dir}/tensorflow/core/platform/default/*.h"
-    "${tensorflow_source_dir}/tensorflow/core/platform/default/*.cc"
-    "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.h"
-    "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.cc")
-if (NOT tensorflow_ENABLE_GPU)
-  file(GLOB tf_core_platform_gpu_srcs
-      "${tensorflow_source_dir}/tensorflow/core/platform/cuda_libdevice_path.*"
-      "${tensorflow_source_dir}/tensorflow/core/platform/default/cuda_libdevice_path.*")
-  list(REMOVE_ITEM tf_core_platform_srcs ${tf_core_platform_gpu_srcs})
-else()
-  file(GLOB tf_core_platform_srcs_exclude
-      "${tensorflow_source_dir}/tensorflow/core/platform/default/device_tracer.cc")
-  list(REMOVE_ITEM tf_core_platform_srcs ${tf_core_platform_srcs_exclude})
-endif()
-
-file(GLOB tf_core_platform_exclude_srcs
-  "${tensorflow_source_dir}/tensorflow/core/platform/variant_coding.cc")
-list(REMOVE_ITEM tf_core_platform_srcs ${tf_core_platform_exclude_srcs})
-
-list(APPEND tf_core_lib_srcs ${tf_core_platform_srcs})
-
-if(UNIX)
-  file(GLOB tf_core_platform_posix_srcs
-      "${tensorflow_source_dir}/tensorflow/core/platform/posix/*.h"
-      "${tensorflow_source_dir}/tensorflow/core/platform/posix/*.cc"
-  )
-  list(APPEND tf_core_lib_srcs ${tf_core_platform_posix_srcs})
-endif(UNIX)
-
-if(WIN32)
-  file(GLOB tf_core_platform_windows_srcs
-      "${tensorflow_source_dir}/tensorflow/core/platform/windows/*.h"
-      "${tensorflow_source_dir}/tensorflow/core/platform/windows/*.cc"
-      "${tensorflow_source_dir}/tensorflow/core/platform/posix/error.h"
-      "${tensorflow_source_dir}/tensorflow/core/platform/posix/error.cc"
-  )
-  list(APPEND tf_core_lib_srcs ${tf_core_platform_windows_srcs})
-endif(WIN32)
-
-file(GLOB_RECURSE tf_core_lib_test_srcs
-    "${tensorflow_source_dir}/tensorflow/core/lib/*test*.h"
-    "${tensorflow_source_dir}/tensorflow/core/lib/*test*.cc"
-    "${tensorflow_source_dir}/tensorflow/core/platform/*test*.h"
-    "${tensorflow_source_dir}/tensorflow/core/platform/*test*.cc"
-    "${tensorflow_source_dir}/tensorflow/core/public/*test*.h"
-)
-list(REMOVE_ITEM tf_core_lib_srcs ${tf_core_lib_test_srcs})
-
-add_library(tf_core_lib STATIC ${tf_core_lib_srcs})
-
-file(GLOB_RECURSE tf_protoc_srcs 
-    "${tensorflow_root_dir}/gencode/tensorflow/*.cc"
+file(GLOB_RECURSE tf_core_framework_exclude_srcs
+    "${tensorflow_source_dir}/tensorflow/core/framework/*test*.h"
+    "${tensorflow_source_dir}/tensorflow/core/framework/*test*.cc"
+    "${tensorflow_source_dir}/tensorflow/core/framework/*testutil.h"
+    "${tensorflow_source_dir}/tensorflow/core/framework/*testutil.cc"
+    "${tensorflow_source_dir}/tensorflow/core/framework/*main.cc"
+    "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.cc"
+    "${tensorflow_source_dir}/tensorflow/core/util/*test*.h"
+    "${tensorflow_source_dir}/tensorflow/core/util/*test*.cc"
+    "${tensorflow_source_dir}/tensorflow/core/util/*main.cc"
+    #"${tensorflow_source_dir}/tensorflow/contrib/tensorboard/db/*test*.cc"
+    #"${tensorflow_source_dir}/tensorflow/contrib/tensorboard/db/loader.cc"
+    #"${tensorflow_source_dir}/tensorflow/contrib/tensorboard/db/vacuum.cc"
 )
 
-add_library(tf_protoc ${tf_protoc_srcs})
+list(REMOVE_ITEM tf_core_framework_srcs ${tf_core_framework_exclude_srcs})
 
-target_link_libraries(tf_core_lib  
-    tf_protoc 
-    ${protobuf_static_library}
-    ${nsync_static_library}
-    ${zlib_static_library} 
-    ${farmhash_static_library}   
-)
-
-if (NOT WIN32)
-find_package (Threads)
-target_link_libraries(tf_core_lib ${CMAKE_THREAD_LIBS_INIT} "dl")
-endif (NOT WIN32)
-
+add_library(tf_core_framework ${tf_core_framework_srcs})
+target_link_libraries(tf_core_framework tf_core_lib)
