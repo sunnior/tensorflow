@@ -51,8 +51,6 @@ set(tf_core_framework_test_srcs_files
 "graph/algorithm_test.cc"
 "graph/edgeset_test.cc"
 "graph/graph_def_builder_test.cc"
-#need cc ops, put it to somewhere else
-#"graph/graph_partition_test.cc"
 "graph/graph_test.cc"
 "graph/node_builder_test.cc"
 "graph/optimizer_cse_test.cc"
@@ -91,3 +89,12 @@ endforeach(file ${})
 
 add_executable(test_framework ${tf_core_framework_test_srcs} $<TARGET_OBJECTS:tf_core_ops> $<TARGET_OBJECTS:tf_core_kernels> $<TARGET_OBJECTS:tf_core_framework_runtime_registration>)
 target_link_libraries(test_framework test_util_main test_util_framework tf_core_framework)
+
+add_executable(test_quantize_training
+"${tensorflow_source_dir}/tensorflow/core/graph/quantize_training_test.cc"
+ $<TARGET_OBJECTS:tf_core_ops>
+ $<TARGET_OBJECTS:tf_core_kernels>
+ $<TARGET_OBJECTS:tf_core_framework_runtime_registration>
+)
+
+target_link_libraries(test_quantize_training test_util_main test_util_framework tf_core_framework)

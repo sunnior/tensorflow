@@ -1,9 +1,15 @@
-add_library(test_util_main 
+file(GLOB test_util_main_srcs
     "${tensorflow_source_dir}/tensorflow/core/platform/test_main.cc"
     "${tensorflow_source_dir}/tensorflow/core/util/reporter.cc"
     "${tensorflow_source_dir}/tensorflow/core/platform/default/test_benchmark.cc"    
     "${tensorflow_source_dir}/tensorflow/core/platform/test.cc"    
 )
+
+if (WIN32)
+list(APPEND test_util_main_srcs "${tensorflow_source_dir}/tensorflow/core/platform/windows/test.cc")
+endif (WIN32)
+
+add_library(test_util_main ${test_util_main_srcs})
 
 target_link_libraries(test_util_main ${gtest_static_library})
 

@@ -653,7 +653,11 @@ TEST(TopologicalSortNodesWithTimePriority, WhileLoop) {
     scope.graph()->AddEdge(next_iteration.node(), 0, merge.output.node(), 1);
 
     int base_start_time = i * 10 + 100;
+#if defined(PLATFORM_WINDOWS)
+    for (const auto& op : std::vector<Output>{
+#else
     for (const auto& op : std::initializer_list<Output>{
+#endif
              enter, merge.output, cv, loop_cond, switch_node.output_false,
              identity, next_iteration, while_exits.back()}) {
       op.node()->AddAttr("_start_time", base_start_time++);

@@ -206,7 +206,12 @@ class CWiseUnaryGradTest : public ::testing::Test {
     EXPECT_LT(max_error, 1e-3f);
   }
 
+#if defined(PLATFORM_WINDOWS)
+//vs compiler bug
+  float RV(const std::vector<double>& v) {
+#else
   float RV(const std::vector<float>& v) {
+#endif
     return v[random::New64() % v.size()];
   }
 
@@ -312,7 +317,7 @@ TEST_F(CWiseUnaryGradTest, Log_Complex) {
 }
 
 TEST_F(CWiseUnaryGradTest, Log1p) {
-  auto x_fn = [this](const int i) { return RV({0, 1e-6, 1, 2, 3, 4, 100}); };
+  auto x_fn = [this](const int i) { return RV({0, 1e-6f, 1, 2, 3, 4, 100}); };
   TestCWiseGrad<float, float>(LOG1P, x_fn);
 }
 
@@ -390,7 +395,7 @@ TEST_F(CWiseUnaryGradTest, Atanh) {
 
 TEST_F(CWiseUnaryGradTest, Atanh_Complex) {
   auto x_fn = [this](const int i) {
-    return CRV({{0.1, 0}, {0, 0.1}, {0.2, -0.1}, {0.1, 0.2}, {0.3, 0.4}});
+    return CRV({{0.1f, 0}, {0, 0.1f}, {0.2f, -0.1f}, {0.1f, 0.2f}, {0.3f, 0.4f}});
   };
   TestCWiseGrad<complex64, complex64>(ATANH, x_fn);
 }
@@ -560,7 +565,7 @@ TEST_F(CWiseUnaryGradTest, Erf) {
 
 TEST_F(CWiseUnaryGradTest, Erf_Complex) {
   auto x_fn = [this](const int i) {
-    return CRV({{-1.2, 0.5}, {-0.5, -0.5}, {0.5, 0.5}, {1.2, -0.5}});
+    return CRV({{-1.2f, 0.5f}, {-0.5f, -0.5f}, {0.5f, 0.5f}, {1.2f, -0.5f}});
   };
   // TODO(kbsriram)
   // Add test when the erf kernel supports complex numbers

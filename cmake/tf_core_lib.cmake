@@ -58,7 +58,8 @@ list(REMOVE_ITEM tf_core_lib_srcs ${tf_core_lib_test_srcs})
 add_library(tf_core_lib STATIC ${tf_core_lib_srcs})
 
 file(GLOB_RECURSE tf_protoc_srcs 
-    "${tensorflow_root_dir}/gencode/tensorflow/*.cc"
+    "${tensorflow_root_dir}/gencode/tensorflow/core/*.cc"
+    "${tensorflow_root_dir}/gencode/tensorflow/tools/*.cc"
     "${tensorflow_source_dir}/tensorflow/core/lib/strings/proto_text_util.cc"
 )
 
