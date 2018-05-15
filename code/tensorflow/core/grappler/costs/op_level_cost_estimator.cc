@@ -253,7 +253,7 @@ OpLevelCostEstimator::OpLevelCostEstimator() {
                       {"Erf", 1},
                       {"Erfc", 1},
                       {"Exp", EIGEN_COST(scalar_exp_op<float>)},
-                      {"Expm1", EIGEN_COST(scalar_expm1_op<float>)},
+                      //{"Expm1", EIGEN_COST(scalar_expm1_op<float>)}, can't find it
                       {"Floor", EIGEN_COST(scalar_floor_op<float>)},
                       {"Inv", EIGEN_COST(scalar_inverse_op<float>)},
                       {"InvGrad", 1},
