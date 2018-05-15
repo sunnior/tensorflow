@@ -52,6 +52,5 @@ set_source_files_properties(
 	COMPILE_FLAGS "/bigobj"
 )
 endif (WIN32)
-)
 
 add_library(tf_core_kernels OBJECT ${tf_core_kernels_srcs})
