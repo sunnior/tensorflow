@@ -55,6 +55,6 @@ list(REMOVE_ITEM tf_core_framework_srcs ${tf_core_framework_exclude_srcs})
 list(REMOVE_ITEM tf_core_framework_srcs ${tf_core_framework_runtime_registration_srcs})
 
 add_library(tf_core_framework ${tf_core_framework_srcs})
-target_link_libraries(tf_core_framework tf_core_lib)
+target_link_libraries(tf_core_framework tf_core_lib tf_proto_text_lib)
 
 add_library(tf_core_framework_runtime_registration OBJECT ${tf_core_framework_runtime_registration_srcs})

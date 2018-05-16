@@ -34,6 +34,7 @@ include_directories(
     "${tensorflow_root_dir}/external/farmhash/include"
 )
 
+include("cmake/tf_protoc.cmake")
 include("cmake/tf_core_lib.cmake")
 include("cmake/tf_core_lib_tests.cmake")
 include("cmake/tf_proto_text.cmake")
