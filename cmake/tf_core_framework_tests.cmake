@@ -87,6 +87,11 @@ foreach(file ${tf_core_framework_test_srcs_files})
     list(APPEND tf_core_framework_test_srcs "${tensorflow_source_dir}/tensorflow/core/${file}")
 endforeach(file ${})
 
+if (WIN32)
+#setenv can't find
+list(REMOVE_ITEM tf_core_framework_test_srcs_files "util/reporter_test.cc")
+endif (WIN32)
+
 add_executable(test_framework ${tf_core_framework_test_srcs} $<TARGET_OBJECTS:tf_core_ops> $<TARGET_OBJECTS:tf_core_kernels> $<TARGET_OBJECTS:tf_core_framework_runtime_registration>)
 target_link_libraries(test_framework test_util_main test_util_framework tf_core_framework)
 

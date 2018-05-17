@@ -16,6 +16,9 @@ output_dir = 'tensorflow/cc/ops/'
 api_dir = '../code/tensorflow/core/api_def/base_api'
 
 os.chdir('gencode')
+if os.path.isdir('tensorflow/cc/ops') == False:
+	os.makedirs('tensorflow/cc/ops')
+
 for root, _, filenames in os.walk(binary_dir):
     for filename in filenames:
         if filename.startswith(prefix) and filename.endswith(ext):
@@ -27,7 +30,20 @@ for root, _, filenames in os.walk(binary_dir):
                 targetname = filename[prefix_len:-ext_len]
                 internal = '0'
 
-            print(targetname)
-            print(internal)
-            print(bin_path)
-            subprocess.call([bin_path, output_dir + targetname + '.h', output_dir + targetname + '.cc', internal, api_dir])
+            time = os.path.getmtime(bin_path)
+            ifneedrun = True
+            output_header = output_dir + targetname + '.h'
+            output_cc = output_dir + targetname + '.cc'
+            ifneedrun = True
+            ifneedrun = True
+            if os.path.isfile(output_header) and os.path.isfile(output_cc):
+                header_time = os.path.getmtime(output_header)
+                cc_time = os.path.getmtime(output_cc)
+                if header_time > time and cc_time > time:
+                    ifneedrun = False
+            #print(targetname)
+            #print(internal)
+            #print(bin_path)
+            if ifneedrun:
+                print('generate ops:', targetname)
+                subprocess.call([bin_path, output_header, output_cc, internal, api_dir])

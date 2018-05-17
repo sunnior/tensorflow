@@ -2,11 +2,14 @@ import os
 import subprocess
 
 source_dir = 'code'
-protoc = 'build/tf_proto_text'
+protoc = 'build/tools/tf_proto_text'
 placeholder = 'code/tensorflow/tools/proto_text/placeholder.txt'
 
 if os.name == 'nt':
     protoc = protoc + '.exe'
+
+if os.path.isdir('gencode') == False:
+	os.makedirs('gencode')
 
 for root, _, filenames in os.walk(source_dir):
     for filename in filenames:

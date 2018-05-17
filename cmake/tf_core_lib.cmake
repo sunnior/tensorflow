@@ -62,14 +62,13 @@ set(external_static_library
 "nsync/lib/libnsync"
 "protobuf/lib/libprotobuf"
 "zlib/lib/libz"
+"farmhash/lib/libfarmhash"
 )
  
 if (WIN32)
 set(static_lib_ext "lib")
 else (WIN32)
 set(static_lib_ext "a")
-#for now I didn't compile windows version
-list(APPEND external_static_library "farmhash/lib/libfarmhash")
 endif (WIN32)
 
 target_link_libraries(tf_core_lib tf_protoc)

@@ -323,7 +323,7 @@ TEST_F(CWiseUnaryGradTest, Log1p) {
 
 TEST_F(CWiseUnaryGradTest, Log1p_Complex) {
   auto x_fn = [this](const int i) {
-    return CRV({{0, 0}, {1e-6, 0}, {2, -1}, {1, 2}, {3, 4}});
+    return CRV({{0, 0}, {1e-6f, 0}, {2, -1}, {1, 2}, {3, 4}});
   };
   TestCWiseGrad<complex64, complex64>(LOG1P, x_fn);
 }
