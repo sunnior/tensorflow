@@ -22,7 +22,7 @@ file(GLOB_RECURSE tf_proto_text_srcs
     "${tensorflow_root_dir}/gencode/tensorflow/*pb_text.cc"
     "${tensorflow_root_dir}/gencode/tensorflow/*pb_text.h"
     "${tensorflow_root_dir}/gencode/tensorflow/*pb_text-impl.h"
-    "${tensorflow_root_dir}/cmake/dump_cmake.cc"
+    "${tensorflow_root_dir}/cmake/dummy.cc"
 )
 
 add_library(tf_proto_text_lib ${tf_proto_text_srcs})

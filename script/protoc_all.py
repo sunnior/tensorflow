@@ -4,6 +4,10 @@ import subprocess
 source_dir = 'code'
 protoc = 'external/protobuf/bin/protoc'
 
+
+if os.path.isdir('gencode') == False:
+	os.makedirs('gencode')
+    
 for root, _, filenames in os.walk(source_dir):
     for filename in filenames:
         if (filename.endswith(".proto")):
@@ -21,3 +25,5 @@ for root, _, filenames in os.walk(source_dir):
             #print(time, filepath)
             if ifneedrun:
                 subprocess.call([protoc, '-I=code', '--cpp_out=gencode', filepath])
+
+os.utime('cmake/tf_protoc.cmake', None)

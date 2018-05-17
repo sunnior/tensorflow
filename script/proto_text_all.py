@@ -8,9 +8,6 @@ placeholder = 'code/tensorflow/tools/proto_text/placeholder.txt'
 if os.name == 'nt':
     protoc = protoc + '.exe'
 
-if os.path.isdir('gencode') == False:
-	os.makedirs('gencode')
-
 for root, _, filenames in os.walk(source_dir):
     for filename in filenames:
         if filename.endswith(".proto"):
