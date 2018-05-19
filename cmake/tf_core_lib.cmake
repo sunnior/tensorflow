@@ -58,6 +58,7 @@ file(GLOB_RECURSE tf_core_lib_test_srcs
 list(REMOVE_ITEM tf_core_lib_srcs ${tf_core_lib_test_srcs})
 
 add_library(tf_core_lib STATIC ${tf_core_lib_srcs})
+add_dependencies(tf_core_lib generate_proto_cc)
 
 set(external_static_library
 "gtest/lib/libgtest"
@@ -72,8 +73,6 @@ set(static_lib_ext "lib")
 else (WIN32)
 set(static_lib_ext "a")
 endif (WIN32)
-
-set(tf_core_lib_link "tf_core_lib" "tf_proto_cc_lib")
 
 foreach(lib ${external_static_library})
     target_link_libraries(tf_core_lib debug "${tensorflow_root_dir}/external/${lib}d.${static_lib_ext}")

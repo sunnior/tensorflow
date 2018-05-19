@@ -1,11 +1,11 @@
-add_library(test_util_framework
+add_library(test_core_framework_util_lib
     "${tensorflow_source_dir}/tensorflow/core/framework/shape_inference_testutil.cc"
     "${tensorflow_source_dir}/tensorflow/core/framework/function_testlib.cc"
     "${tensorflow_source_dir}/tensorflow/core/graph/testlib.cc"
     "${tensorflow_source_dir}/tensorflow/core/kernels/ops_testutil.cc"
 )
 
-add_dependencies(test_util_framework script2_gen_proto_text)
+add_dependencies(test_core_framework_util_lib generate_proto_cc generate_proto_text)
 
 set(tf_core_framework_test_srcs_files
 "common_runtime/buf_rendezvous_test.cc"
@@ -82,7 +82,7 @@ set(tf_core_framework_test_srcs_files
 "util/work_sharder_test.cc"
 )
 
-set(tf_core_framework_test_srcs "")
+set(tf_core_framework_test_srcs)
 
 foreach(file ${tf_core_framework_test_srcs_files})
     #message(STATUS "${tensorflow_source_dir}/tensorflow/core/${file}") 
@@ -94,14 +94,27 @@ if (WIN32)
 list(REMOVE_ITEM tf_core_framework_test_srcs_files "util/reporter_test.cc")
 endif (WIN32)
 
-add_executable(test_framework ${tf_core_framework_test_srcs} $<TARGET_OBJECTS:tf_core_ops> $<TARGET_OBJECTS:tf_core_kernels> $<TARGET_OBJECTS:tf_core_framework_runtime_registration>)
-target_link_libraries(test_framework test_util_main test_util_framework tf_core_framework)
+set(tf_core_objs
+$<TARGET_OBJECTS:tf_core_ops_obj> 
+$<TARGET_OBJECTS:tf_core_kernels_obj> 
+$<TARGET_OBJECTS:tf_core_framework_runtime_obj>
+)
+set(test_framework_link
+test_core_framework_util_lib
+test_core_lib_util_lib
+${tf_core_framework_link}
+)
+
+add_executable(test_framework 
+${tf_core_framework_test_srcs} 
+${tf_core_objs}
+)
+
+target_link_libraries(test_framework ${test_framework_link})
 
 add_executable(test_quantize_training
 "${tensorflow_source_dir}/tensorflow/core/graph/quantize_training_test.cc"
- $<TARGET_OBJECTS:tf_core_ops>
- $<TARGET_OBJECTS:tf_core_kernels>
- $<TARGET_OBJECTS:tf_core_framework_runtime_registration>
+${tf_core_objs}
 )
 
-target_link_libraries(test_quantize_training test_util_main test_util_framework tf_core_framework)
+target_link_libraries(test_quantize_training ${test_framework_link})

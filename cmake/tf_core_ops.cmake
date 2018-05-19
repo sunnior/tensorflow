@@ -14,4 +14,5 @@ file(GLOB_RECURSE tf_core_ops_srcs
 "${tensorflow_source_dir}/tensorflow/core/ops/state_ops.cc"
 )
 
-add_library(tf_core_ops OBJECT ${tf_core_ops_srcs})
+add_library(tf_core_ops_obj OBJECT ${tf_core_ops_srcs})
+add_dependencies(tf_core_ops_obj generate_proto_cc)

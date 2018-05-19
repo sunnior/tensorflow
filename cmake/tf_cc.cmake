@@ -35,5 +35,6 @@ file(GLOB tf_cc_grads_exclude_srcs
 
 list(REMOVE_ITEM tf_cc_srcs ${tf_cc_exclude_srcs})
 list(REMOVE_ITEM tf_cc_grads_srcs ${tf_cc_grads_exclude_srcs})
-add_library(tf_cc ${tf_cc_srcs})
-add_library(tf_cc_grads OBJECT ${tf_cc_grads_srcs})
+add_library(tf_cc_lib ${tf_cc_srcs})
+add_library(tf_cc_grads_obj OBJECT ${tf_cc_grads_srcs})
+add_dependencies(tf_cc_lib generate_proto_cc generate_proto_text)

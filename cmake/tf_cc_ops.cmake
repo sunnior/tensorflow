@@ -5,10 +5,10 @@ file(GLOB tf_cc_ops_gen_srcs
 )
 
 add_library(tf_cc_ops_gen ${tf_cc_ops_gen_srcs})
-target_link_libraries(tf_cc_ops_gen tf_core_framework)
+target_link_libraries(tf_cc_ops_gen ${tf_core_framework_link})
 
-add_custom_target(script3_gen_cc_ops
-    COMMAND python script/cc_gen_ops.py
+add_custom_target(generate_cc_ops
+    COMMAND python script/gen_cc_ops.py
     WORKING_DIRECTORY ${tensorflow_root_dir}
 )
 
@@ -46,7 +46,7 @@ add_executable(tf_cc_ops_gen_${target}
 "${tensorflow_source_dir}/tensorflow/core/ops/${target}.cc"
 )
 target_link_libraries(tf_cc_ops_gen_${target} tf_cc_ops_gen)
-add_dependencies(script3_gen_cc_ops tf_cc_ops_gen_${target})
+add_dependencies(generate_cc_ops tf_cc_ops_gen_${target})
 set_target_properties(tf_cc_ops_gen_${target}
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${tensorflow_root_dir}/build/tools"
@@ -66,7 +66,7 @@ add_executable(tf_cc_ops_gen_internal_${target}
 "${tensorflow_source_dir}/tensorflow/core/ops/${target}.cc"
 )
 target_link_libraries(tf_cc_ops_gen_internal_${target} tf_cc_ops_gen)
-add_dependencies(script3_gen_cc_ops tf_cc_ops_gen_internal_${target})
+add_dependencies(generate_cc_ops tf_cc_ops_gen_internal_${target})
 set_target_properties(tf_cc_ops_gen_internal_${target}
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${tensorflow_root_dir}/build/tools"
@@ -85,7 +85,6 @@ set_source_files_properties(${tf_cc_ops_gen_srcs} PROPERTIES GENERATED TRUE)
 
 file(GLOB tf_cc_ops_srcs
 "${tensorflow_source_dir}/tensorflow/cc/ops/*.cc"
-"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/*.cc"
 )
 
 file(GLOB tf_cc_ops_tests_srcs
@@ -96,4 +95,4 @@ list(REMOVE_ITEM tf_cc_ops_srcs ${tf_cc_ops_tests_srcs})
 
 add_library(tf_cc_ops ${tf_cc_ops_srcs} ${tf_cc_ops_gen_srcs})
 target_link_libraries(tf_cc_ops tf_cc)
-add_dependencies(tf_cc_ops script3_gen_cc_ops)
+add_dependencies(tf_cc_ops generate_cc_ops)

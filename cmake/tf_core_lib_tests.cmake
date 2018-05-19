@@ -63,7 +63,7 @@ add_executable(test_lib ${tf_core_lib_test_srcs})
 add_executable(test_lib_platform ${tf_core_lib_test_platform_srcs})
 add_executable(test_lib_monitoring ${tf_core_lib_monitoring_test_srcs})
 
-set(tf_core_lib_test_link "test_core_lib_util_lib" ${tf_core_lib_link})
+set(tf_core_lib_test_link test_core_lib_util_lib ${tf_core_lib_link})
 target_link_libraries(test_lib_platform  ${tf_core_lib_test_link})
 target_link_libraries(test_lib ${tf_core_lib_test_link})
 target_link_libraries(test_lib_monitoring ${tf_core_lib_test_link})
