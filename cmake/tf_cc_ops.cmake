@@ -40,6 +40,7 @@ set(tf_cc_ops_gen_internal_targets
 "sendrecv_ops"
 )
 
+set(tf_cc_ops_gen_srcs)
 foreach(target ${tf_cc_ops_gen_targets})
 add_executable(tf_cc_ops_gen_${target}
 "${tensorflow_source_dir}/tensorflow/core/ops/${target}.cc"
@@ -50,6 +51,13 @@ set_target_properties(tf_cc_ops_gen_${target}
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${tensorflow_root_dir}/build/tools"
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${tensorflow_root_dir}/build/tools"
+)
+
+list(APPEND tf_cc_ops_gen_srcs
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}.cc"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}.h"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}_internal.cc"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}_internal.h"
 )
 endforeach(target ${})
 
@@ -64,7 +72,16 @@ set_target_properties(tf_cc_ops_gen_internal_${target}
 	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${tensorflow_root_dir}/build/tools"
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${tensorflow_root_dir}/build/tools"
 )
+
+list(APPEND tf_cc_ops_gen_srcs
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}.cc"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}.h"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}_internal.cc"
+"${tensorflow_root_dir}/gencode/tensorflow/cc/ops/${target}_internal.h"
+)
 endforeach(target ${})
+
+set_source_files_properties(${tf_cc_ops_gen_srcs} PROPERTIES GENERATED TRUE)
 
 file(GLOB tf_cc_ops_srcs
 "${tensorflow_source_dir}/tensorflow/cc/ops/*.cc"
@@ -77,6 +94,6 @@ file(GLOB tf_cc_ops_tests_srcs
 
 list(REMOVE_ITEM tf_cc_ops_srcs ${tf_cc_ops_tests_srcs})
 
-add_library(tf_cc_ops ${tf_cc_ops_srcs})
+add_library(tf_cc_ops ${tf_cc_ops_srcs} ${tf_cc_ops_gen_srcs})
 target_link_libraries(tf_cc_ops tf_cc)
 add_dependencies(tf_cc_ops script3_gen_cc_ops)

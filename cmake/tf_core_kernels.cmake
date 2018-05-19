@@ -53,4 +53,5 @@ set_source_files_properties(
 )
 endif (WIN32)
 
-add_library(tf_core_kernels OBJECT ${tf_core_kernels_srcs})
+add_library(tf_core_kernels_obj OBJECT ${tf_core_kernels_srcs})
+add_dependencies(tf_core_kernels_obj generate_proto_cc generate_proto_text)

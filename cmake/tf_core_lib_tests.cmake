@@ -1,4 +1,4 @@
-file(GLOB test_util_main_srcs
+file(GLOB test_core_lib_util_srcs
     "${tensorflow_source_dir}/tensorflow/core/platform/test_main.cc"
     "${tensorflow_source_dir}/tensorflow/core/util/reporter.cc"
     "${tensorflow_source_dir}/tensorflow/core/platform/default/test_benchmark.cc"    
@@ -6,12 +6,13 @@ file(GLOB test_util_main_srcs
 )
 
 if (WIN32)
-list(APPEND test_util_main_srcs "${tensorflow_source_dir}/tensorflow/core/platform/windows/test.cc")
+list(APPEND test_core_lib_util_srcs "${tensorflow_source_dir}/tensorflow/core/platform/windows/test.cc")
 endif (WIN32)
 
-add_library(test_util_main ${test_util_main_srcs})
+add_library(test_core_lib_util_lib ${test_core_lib_util_srcs})
+target_link_libraries(test_core_lib_util_lib ${gtest_static_library})
+add_dependencies(test_core_lib_util_lib generate_proto_cc)
 
-target_link_libraries(test_util_main ${gtest_static_library})
 
 file(GLOB_RECURSE tf_core_lib_test_srcs
     "${tensorflow_source_dir}/tensorflow/core/lib/*test*.h"
@@ -62,6 +63,7 @@ add_executable(test_lib ${tf_core_lib_test_srcs})
 add_executable(test_lib_platform ${tf_core_lib_test_platform_srcs})
 add_executable(test_lib_monitoring ${tf_core_lib_monitoring_test_srcs})
 
-target_link_libraries(test_lib_platform test_util_main tf_core_lib)
-target_link_libraries(test_lib test_util_main tf_core_lib)
-target_link_libraries(test_lib_monitoring test_util_main tf_core_lib)
+set(tf_core_lib_test_link "test_core_lib_util_lib" ${tf_core_lib_link})
+target_link_libraries(test_lib_platform  ${tf_core_lib_test_link})
+target_link_libraries(test_lib ${tf_core_lib_test_link})
+target_link_libraries(test_lib_monitoring ${tf_core_lib_test_link})

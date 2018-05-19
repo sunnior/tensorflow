@@ -1,3 +1,7 @@
+#################################################
+# tf_proto_text lib
+#################################################
+
 add_executable(tf_proto_text
     "${tensorflow_source_dir}/tensorflow/tools/proto_text/gen_proto_text_functions.cc"
     "${tensorflow_source_dir}/tensorflow/tools/proto_text/gen_proto_text_functions_lib.cc"    
@@ -11,19 +15,18 @@ set_target_properties(tf_proto_text
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${tensorflow_root_dir}/build/tools"
 )
 
-add_custom_target(script2_gen_proto_text
-    COMMAND python script/proto_text_all.py
+add_custom_target(generate_proto_text
+    COMMAND python script/gen_proto_text.py
     WORKING_DIRECTORY ${tensorflow_root_dir}
 )
 
-add_dependencies(script2_gen_proto_text tf_proto_text)
+add_dependencies(generate_proto_text tf_proto_text)
 
-file(GLOB_RECURSE tf_proto_text_srcs 
-    "${tensorflow_root_dir}/gencode/tensorflow/*pb_text.cc"
-    "${tensorflow_root_dir}/gencode/tensorflow/*pb_text.h"
-    "${tensorflow_root_dir}/gencode/tensorflow/*pb_text-impl.h"
-    "${tensorflow_root_dir}/cmake/dummy.cc"
+set(tf_proto_text_srcs 
+    ${PROTO_TEXT_SRCS}
+    ${PROTO_TEXT_HDRS}
+    ${PROTO_TEXT_IMPL_HDRS}
 )
 
 add_library(tf_proto_text_lib ${tf_proto_text_srcs})
-add_dependencies(tf_proto_text_lib script2_gen_proto_text)
+add_dependencies(tf_proto_text_lib generate_proto_text)

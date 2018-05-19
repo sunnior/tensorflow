@@ -10,7 +10,9 @@ file(GLOB tf_core_platform_srcs
     "${tensorflow_source_dir}/tensorflow/core/platform/default/*.h"
     "${tensorflow_source_dir}/tensorflow/core/platform/default/*.cc"
     "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.h"
-    "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.cc")
+    "${tensorflow_source_dir}/tensorflow/core/framework/resource_handle.cc"
+)
+
 if (NOT tensorflow_ENABLE_GPU)
   file(GLOB tf_core_platform_gpu_srcs
       "${tensorflow_source_dir}/tensorflow/core/platform/cuda_libdevice_path.*"
@@ -71,7 +73,7 @@ else (WIN32)
 set(static_lib_ext "a")
 endif (WIN32)
 
-target_link_libraries(tf_core_lib tf_protoc)
+set(tf_core_lib_link "tf_core_lib" "tf_proto_cc_lib")
 
 foreach(lib ${external_static_library})
     target_link_libraries(tf_core_lib debug "${tensorflow_root_dir}/external/${lib}d.${static_lib_ext}")

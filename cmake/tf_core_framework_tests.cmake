@@ -5,6 +5,8 @@ add_library(test_util_framework
     "${tensorflow_source_dir}/tensorflow/core/kernels/ops_testutil.cc"
 )
 
+add_dependencies(test_util_framework script2_gen_proto_text)
+
 set(tf_core_framework_test_srcs_files
 "common_runtime/buf_rendezvous_test.cc"
 "common_runtime/collective_executor_mgr_test.cc"
