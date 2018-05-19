@@ -7,6 +7,8 @@ file(GLOB test_core_lib_util_srcs
 
 if (WIN32)
 list(APPEND test_core_lib_util_srcs "${tensorflow_source_dir}/tensorflow/core/platform/windows/test.cc")
+else (WIN32)
+list(APPEND test_core_lib_util_srcs "${tensorflow_source_dir}/tensorflow/core/platform/posix/test.cc")
 endif (WIN32)
 
 add_library(test_core_lib_util_lib ${test_core_lib_util_srcs})

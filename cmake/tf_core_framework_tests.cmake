@@ -94,15 +94,9 @@ if (WIN32)
 list(REMOVE_ITEM tf_core_framework_test_srcs_files "util/reporter_test.cc")
 endif (WIN32)
 
-set(tf_core_objs
-$<TARGET_OBJECTS:tf_core_ops_obj> 
-$<TARGET_OBJECTS:tf_core_kernels_obj> 
-$<TARGET_OBJECTS:tf_core_framework_runtime_obj>
-)
 set(test_framework_link
 test_core_framework_util_lib
 test_core_lib_util_lib
-${tf_core_framework_link}
 )
 
 add_executable(test_framework 
@@ -110,7 +104,7 @@ ${tf_core_framework_test_srcs}
 ${tf_core_objs}
 )
 
-target_link_libraries(test_framework ${test_framework_link})
+target_link_libraries(test_framework ${test_framework_link} ${tf_core_framework_link})
 
 add_executable(test_quantize_training
 "${tensorflow_source_dir}/tensorflow/core/graph/quantize_training_test.cc"

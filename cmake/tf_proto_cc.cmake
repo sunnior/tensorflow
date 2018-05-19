@@ -75,6 +75,8 @@ set(tf_proto_srcs
     "tensorflow/core/protobuf/rewriter_config.proto"
     "tensorflow/core/protobuf/tensor_bundle.proto"
     "tensorflow/core/protobuf/saver.proto"
+    "tensorflow/core/protobuf/meta_graph.proto" #need by tf_cc
+    "tensorflow/core/protobuf/saved_model.proto" #need by tf_cc
     "tensorflow/core/util/memmapped_file_system.proto"
     "tensorflow/core/util/saved_tensor_slice.proto"
     "tensorflow/core/util/event.proto"

@@ -94,5 +94,4 @@ file(GLOB tf_cc_ops_tests_srcs
 list(REMOVE_ITEM tf_cc_ops_srcs ${tf_cc_ops_tests_srcs})
 
 add_library(tf_cc_ops ${tf_cc_ops_srcs} ${tf_cc_ops_gen_srcs})
-target_link_libraries(tf_cc_ops tf_cc)
 add_dependencies(tf_cc_ops generate_cc_ops)

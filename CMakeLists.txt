@@ -44,8 +44,18 @@ include("cmake/tf_core_framework.cmake")
 include("cmake/tf_core_ops.cmake")
 include("cmake/tf_core_kernels.cmake")
 set(tf_core_framework_link tf_core_framework tf_proto_text_lib ${tf_core_lib_link})
+
+set(tf_core_objs
+$<TARGET_OBJECTS:tf_core_ops_obj> 
+$<TARGET_OBJECTS:tf_core_kernels_obj> 
+$<TARGET_OBJECTS:tf_core_framework_runtime_obj>
+)
+
 include("cmake/tf_core_framework_tests.cmake")
 
 include("cmake/tf_cc_ops.cmake")
 include("cmake/tf_cc.cmake")
-#include("cmake/tf_higher_level_tests.cmake")
+
+set(tf_cc_link tf_cc_ops tf_cc_lib ${tf_core_framework_link})
+set(tf_cc_obj $<TARGET_OBJECTS:tf_cc_grads_obj> ${tf_core_objs})
+include("cmake/tf_higher_level_tests.cmake")
