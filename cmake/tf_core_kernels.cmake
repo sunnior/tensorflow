@@ -42,12 +42,19 @@ file(GLOB_RECURSE tf_core_kernels_srcs
 "${tensorflow_source_dir}/tensorflow/core/kernels/ops_util.cc"
 "${tensorflow_source_dir}/tensorflow/core/kernels/concat_lib_cpu.cc"
 "${tensorflow_source_dir}/tensorflow/core/kernels/split_lib_cpu.cc"
- )
- 
+"${tensorflow_source_dir}/tensorflow/core/kernels/string_join_op.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/save_restore_v2_ops.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/save_restore_tensor.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/save_op.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/reshape_op.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/example_parsing_ops.cc"
+)
+
 if (WIN32)
 set_source_files_properties(
 	"${tensorflow_source_dir}/tensorflow/core/kernels/cwise_op_sub.cc"
 	"${tensorflow_source_dir}/tensorflow/core/kernels/matmul_op.cc"
+	"${tensorflow_source_dir}/tensorflow/core/kernels/spacetobatch_op.cc"
 	PROPERTIES
 	COMPILE_FLAGS "/bigobj"
 )

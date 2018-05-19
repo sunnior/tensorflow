@@ -168,7 +168,9 @@ double NominalCPUFrequency() {
 #ifdef TENSORFLOW_USE_ABSL
   return absl::base_internal::NominalCPUFrequency();
 #else
-  return 1.0;
+  LOG(WARNING) << "sunyuzhe: hardcode for my i7-8700k, fix me later";
+  //return 1.0;
+  return 3.7 * 1e9;
 #endif
 }
 

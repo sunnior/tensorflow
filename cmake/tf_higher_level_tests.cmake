@@ -21,6 +21,7 @@ file(GLOB test_tf_cc_exclude_srcs
 "${tensorflow_source_dir}/tensorflow/cc/tools/freeze_saved_model_test.cc"
 "${tensorflow_source_dir}/tensorflow/cc/framework/cc_ops_test.cc"
 "${tensorflow_source_dir}/tensorflow/cc/framework/cc_op_gen_test.cc"
+"${tensorflow_source_dir}/tensorflow/cc/saved_model/loader_test.cc"
 )
 
 list(REMOVE_ITEM test_tf_cc_srcs ${test_tf_cc_exclude_srcs})
@@ -31,3 +32,10 @@ ${tf_cc_obj}
 )
 
 target_link_libraries(test_tf_cc ${test_framework_link} ${tf_cc_link})
+
+add_executable(test_tf_loader
+"${tensorflow_source_dir}/tensorflow/cc/saved_model/loader_test.cc"
+${tf_cc_obj}
+)
+
+target_link_libraries(test_tf_loader ${test_framework_link} ${tf_cc_link})

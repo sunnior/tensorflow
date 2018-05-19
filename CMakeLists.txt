@@ -56,6 +56,6 @@ include("cmake/tf_core_framework_tests.cmake")
 include("cmake/tf_cc_ops.cmake")
 include("cmake/tf_cc.cmake")
 
-set(tf_cc_link tf_cc_ops tf_cc_lib ${tf_core_framework_link})
+set(tf_cc_link tf_cc_lib tf_cc_ops ${tf_core_framework_link})
 set(tf_cc_obj $<TARGET_OBJECTS:tf_cc_grads_obj> ${tf_core_objs})
 include("cmake/tf_higher_level_tests.cmake")
