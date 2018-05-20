@@ -94,6 +94,27 @@ class LoaderTest : public ::testing::Test {
   }
 };
 
+TEST_F(LoaderTest, MyTest) {
+  SavedModelBundle bundle;
+  SessionOptions session_options;
+  RunOptions run_options;
+
+  const char test_dir[] = "cc/saved_model/testdata/test_dir";
+  const string export_dir = io::JoinPath(testing::TensorFlowSrcRoot(), test_dir);
+  Status status = LoadSavedModel(session_options, run_options, export_dir,
+                                {"test_graph"}, &bundle); 
+  TF_ASSERT_OK(status);
+
+  std::vector<std::pair<string, Tensor>> feeds;
+  std::vector<string> output_tensor_names{"v"};
+  std::vector<string> target_node_names;
+  std::vector<Tensor> outputs;
+
+  const GraphDef& graph_def = bundle.meta_graph_def.graph_def();
+  TF_ASSERT_OK(bundle.session->Extend(graph_def));
+  bundle.session->Run(run_options, feeds, output_tensor_names, target_node_names, &outputs, nullptr);
+}
+
 // Test for resource leaks related to TensorFlow session closing requirements
 // when loading and unloading large numbers of SavedModelBundles.
 // TODO(sukritiramesh): Increase run iterations and move outside of the test
