@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4716 /wd4267 /wd4244 /wd4800 /wd4576")
 else (WIN32)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+#-fno-exceptions -fno-rtti try to enable later.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
 endif (WIN32)
 
