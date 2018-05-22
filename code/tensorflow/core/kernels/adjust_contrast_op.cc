@@ -247,9 +247,9 @@ class AdjustContrastOpv2<CPUDevice> : public AdjustContrastOpV2Base {
     // only one set of channels remains.
     for (int64 i = 0; i < batch; i++) {
       auto input_plane =
-          input_flat.slice(Index(i * plane_size), Index(plane_size));
+          input_flat.slice(Index{i * plane_size}, Index{plane_size});
       auto summation_plane =
-          summation_scratch.slice(Index(i * plane_size), Index(plane_size));
+          summation_scratch.slice(Index{i * plane_size}, Index{plane_size});
       int64 remaining_size = image_size;
       int round = 0;
       // Sum the input(i, :, k) into mean(i, k). Repeatedly splits the input
@@ -280,26 +280,26 @@ class AdjustContrastOpv2<CPUDevice> : public AdjustContrastOpV2Base {
         if (round == 0) {
           // In the first round, sum the left side and right side of the input
           // array into the summation area.
-          summation_plane.slice(Index(0), Index(right_size * channels)) =
-              input_plane.slice(Index(left_size * channels),
-                                Index(right_size * channels)) +
-              input_plane.slice(Index(0), Index(right_size * channels));
+          summation_plane.slice(Index{0}, Index{right_size * channels}) =
+              input_plane.slice(Index{left_size * channels},
+                                Index{right_size * channels}) +
+              input_plane.slice(Index{0}, Index{right_size * channels});
           if (left_size > right_size) {
             DCHECK_EQ(left_size - right_size, 1);
             // Copy over the remaining column if the remaining_size is odd.
             // This also handles the case where image_size == 1.
-            summation_plane.slice(Index(right_size * channels),
-                                  Index(channels)) =
-                input_plane.slice(Index(right_size * channels),
-                                  Index(channels));
+            summation_plane.slice(Index{right_size * channels},
+                                  Index{channels}) =
+                input_plane.slice(Index{right_size * channels},
+                                  Index{channels});
           }
         } else {
           // For all the remaining rounds, add the second half of the inputs
           // into the first half of the inputs. With the flat structure and
           // large size, this utilizes vectorization between components.
-          summation_plane.slice(Index(0), Index(right_size * channels)) +=
-              summation_plane.slice(Index(left_size * channels),
-                                    Index(right_size * channels));
+          summation_plane.slice(Index{0}, Index{right_size * channels}) +=
+              summation_plane.slice(Index{left_size * channels},
+                                    Index{right_size * channels});
         }
         remaining_size = left_size;
         round++;
@@ -307,9 +307,9 @@ class AdjustContrastOpv2<CPUDevice> : public AdjustContrastOpV2Base {
       const float mean_scaling = 1.0f / image_size;
       // The first channels elements in summation_plane now holds the summation.
       // Scale it with image_size and copy over to the means.
-      auto mean_plane = mean_flat.slice(Index(i * channels), Index(channels));
+      auto mean_plane = mean_flat.slice(Index{i * channels}, Index{channels});
       mean_plane =
-          summation_plane.slice(Index(0), Index(channels)) * mean_scaling;
+          summation_plane.slice(Index{0}, Index{channels}) * mean_scaling;
     }
   }
 

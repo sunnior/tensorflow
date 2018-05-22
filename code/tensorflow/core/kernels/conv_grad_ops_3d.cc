@@ -176,12 +176,13 @@ class Conv3DBackpropInputOp : public OpKernel {
       input_shape = context->input(0).shape();
     }
     EXTRACT_AND_VERIFY_DIMENSIONS("Conv3DBackpropInput");
+    Eigen::IndexPair<Eigen::DenseIndex> zero_pair{0, 0};
     Eigen::array<Eigen::IndexPair<Eigen::DenseIndex>, 5> pad_dims{
-        {0, 0},
+        zero_pair,
         {top_pad_planes, bottom_pad_planes},
         {top_pad_rows, bottom_pad_rows},
         {left_pad_cols, right_pad_cols},
-        {0, 0}};
+        zero_pair};
     Tensor* in_backprop;
     OP_REQUIRES_OK(context,
                    context->allocate_output(0, input_shape, &in_backprop));
@@ -288,12 +289,13 @@ class Conv3DBackpropFilterOp : public OpKernel {
     }
 
     EXTRACT_AND_VERIFY_DIMENSIONS("Conv3DBackpropFilter");
+    Eigen::IndexPair<Eigen::DenseIndex> zero_pair{0, 0};
     Eigen::array<Eigen::IndexPair<Eigen::DenseIndex>, 5> pad_dims{
-        {0, 0},
+        zero_pair,
         {top_pad_planes, bottom_pad_planes},
         {top_pad_rows, bottom_pad_rows},
         {left_pad_cols, right_pad_cols},
-        {0, 0}};
+        zero_pair};
     Tensor* filter_backprop;
     OP_REQUIRES_OK(context,
                    context->allocate_output(0, filter_shape, &filter_backprop));

@@ -301,7 +301,7 @@ struct SparseTensorDenseMatMulFunctor<CPUDevice, T, Tindices, ADJ_A, ADJ_B> {
       if (ADJ_B) {
         // Perform transpose and conjugation on B once, since we chip out B's
         // columns in the nnz loop.
-        Eigen::array<int, 2> shuffle(1, 0);  // preserve dimension order
+        Eigen::array<int, 2> shuffle{1, 0};  // preserve dimension order
         Eigen::Tensor<T, 2, Eigen::ColMajor> col_major_conj_b =
             b.swap_layout().shuffle(shuffle).conjugate();
         LOOP_NNZ(col_major_conj_b);
