@@ -66,6 +66,8 @@ set(tf_proto_srcs
     "tensorflow/core/framework/tensor_slice.proto"
     "tensorflow/core/framework/types.proto"
     "tensorflow/core/framework/versions.proto"
+    "tensorflow/core/framework/reader_base.proto"
+    "tensorflow/core/framework/iterator.proto"
     "tensorflow/core/lib/core/error_codes.proto"
     "tensorflow/core/protobuf/cluster.proto"
     "tensorflow/core/protobuf/config.proto"
@@ -77,6 +79,7 @@ set(tf_proto_srcs
     "tensorflow/core/protobuf/saver.proto"
     "tensorflow/core/protobuf/meta_graph.proto" #need by tf_cc
     "tensorflow/core/protobuf/saved_model.proto" #need by tf_cc
+    "tensorflow/core/kernels/boosted_trees/boosted_trees.proto" #need by tf_cc
     "tensorflow/core/util/memmapped_file_system.proto"
     "tensorflow/core/util/saved_tensor_slice.proto"
     "tensorflow/core/util/event.proto"

@@ -61,6 +61,7 @@ file(GLOB_RECURSE tf_core_kernels_not_compile_srcs
 "${tensorflow_source_dir}/tensorflow/core/kernels/reduction_ops_mean.cc"
 "${tensorflow_source_dir}/tensorflow/core/kernels/meta_support.cc"
 "${tensorflow_source_dir}/tensorflow/core/kernels/data/sql/*.cc"
+"${tensorflow_source_dir}/tensorflow/core/kernels/data/sql_dataset_ops.cc"
 )
 list(REMOVE_ITEM tf_core_kernels_srcs ${tf_core_kernels_not_compile_srcs})
 
