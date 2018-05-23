@@ -7,7 +7,7 @@ int main() {
   using namespace tensorflow;
   using namespace tensorflow::ops;
   
-  const string export_dir = "test_dir";
+  const string export_dir = "code/demo/loader/test_dir";
   SavedModelBundle bundle;
   SessionOptions session_options;
   RunOptions run_options;

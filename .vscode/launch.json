@@ -6,10 +6,10 @@
     "configurations": [
 
         {
-            "name": "(gdb) demo_simple1",
+            "name": "(gdb) demo_loader",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/demo_simple1",
+            "program": "${workspaceFolder}/build/demo_loader",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
