@@ -23,6 +23,6 @@ int main() {
   const GraphDef& graph_def = bundle.meta_graph_def.graph_def();
   bundle.session->Run(run_options, feeds, output_tensor_names, target_node_names, &outputs, nullptr);
   Tensor tensor = outputs[0];
-  //float* p_data = tensor.flat<float>();
+  auto p_data = tensor.flat<float>();
   return 0;
 }
