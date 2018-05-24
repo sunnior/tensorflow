@@ -2,6 +2,7 @@
 #include "tensorflow/cc/ops/standard_ops.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/cc/saved_model/loader.h"
+#include "tensorflow/core/framework/tensor_testutil.h"
 
 int main() {
   using namespace tensorflow;
@@ -14,7 +15,7 @@ int main() {
 
   LoadSavedModel(session_options, run_options, export_dir, {"test_graph"}, &bundle);
 
-  std::vector<std::pair<string, Tensor>> feeds;
+  std::vector<std::pair<string, Tensor>> feeds{{"input_x", test::AsTensor<float>({1.0f})}};
   std::vector<string> output_tensor_names{"target_add"};
   std::vector<string> target_node_names;
   std::vector<Tensor> outputs;
