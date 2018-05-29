@@ -38,9 +38,15 @@ int main() {
   auto p_data = tensor.flat<float>();
   int size = p_data.size();
   float* p_out_data = p_data.data();
-  for (int i = 0; i < size; ++i)
+
+  for (int i = 0; i < 16; ++i)
   {
     printf("%f ", *(p_out_data + i));
+    for (int j = 0; j < 16; ++j)
+    {
+        printf("%.1f ", *(p_out_data + i* 16 +j));
+    }
+    printf("\n");
   }
   return 0;
 }

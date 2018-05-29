@@ -6,10 +6,11 @@ project(tensorflow C CXX)
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_BUILD_TYPE "Release")
 add_definitions(-D__AVX2__ -D__AVX__)
+#add_definitions(-DGOOGLE_CUDA)
 
 if (WIN32)
 add_definitions(-DPLATFORM_WINDOWS -DTF_WIN_STATIC_LIBRARY -DCOMPILER_MSVC -DNOMINMAX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /arch:AVX")
 #4716: must return a value
 #4267, 4244: data type narrowing
 #4800: forcing value to bool

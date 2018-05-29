@@ -5,7 +5,7 @@ size = 32
 channel = 3
 
 kernel_size = 5
-conv_out_channel = 12
+conv_out_channel = 1
 
 v_input = np.full([1, size, size, channel], 1.0, dtype=np.float32)
 
@@ -18,15 +18,15 @@ bias = tf.Variable(tf.constant(1.0, dtype=tf.float32, shape=[size/2, size/2, con
 
 relu = tf.nn.relu(conv + bias, name='relu')
 
-#builder = tf.saved_model.builder.SavedModelBuilder('test_model_conv')
+builder = tf.saved_model.builder.SavedModelBuilder('test_model_conv')
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     vout = sess.run(relu, feed_dict={input:v_input})
     print(vout)
-    #builder.add_meta_graph_and_variables(sess, ['test_model_conv'])
+    builder.add_meta_graph_and_variables(sess, ['test_model_conv'])
 
-#builder.save()
+builder.save()
 
 
 #cost = tf.reduce_sum(tf.pow(Y_pred - Y, 2)) / (n_observations - 1)
