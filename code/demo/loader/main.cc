@@ -13,7 +13,9 @@ int main() {
   SessionOptions session_options;
   RunOptions run_options;
 
-  LoadSavedModel(session_options, run_options, export_dir, {"test_model_conv"}, &bundle);
+  Status status = LoadSavedModel(session_options, run_options, export_dir, {"test_model_conv"}, &bundle);
+
+  printf("%s\n", status.ToString().c_str());
 
   float data[32][32][3];
   float* pdata = &data[0][0][0];
