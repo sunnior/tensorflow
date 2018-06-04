@@ -91,7 +91,7 @@ endforeach(file ${})
 
 if (WIN32)
 #setenv can't find
-list(REMOVE_ITEM tf_core_framework_test_srcs_files "util/reporter_test.cc")
+list(REMOVE_ITEM tf_core_framework_test_srcs "${tensorflow_source_dir}/tensorflow/core/util/reporter_test.cc")
 endif (WIN32)
 
 set(test_framework_link

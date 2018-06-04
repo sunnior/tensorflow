@@ -22,6 +22,7 @@ limitations under the License.
 #include <stdint.h>
 #if defined(WIN32)
 #include "extras/CUPTI/include/cupti.h"
+#undef ERROR
 #else
 #include "cuda/extras/CUPTI/include/cupti.h"
 #endif

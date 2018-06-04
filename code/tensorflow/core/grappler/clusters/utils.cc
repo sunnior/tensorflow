@@ -18,9 +18,13 @@ limitations under the License.
 #include "third_party/eigen3/Eigen/Core"
 
 #if GOOGLE_CUDA
-#include "cuda/include/cuda.h"
+/*#include "cuda/include/cuda.h"
 #include "cuda/include/cuda_runtime_api.h"
-#include "cuda/include/cudnn.h"
+#include "cuda/include/cudnn.h"*/
+
+#include "cuda.h"
+#include "cuda_runtime_api.h"
+#include "cudnn.h"
 #endif
 
 #ifdef EIGEN_USE_LIBXSMM

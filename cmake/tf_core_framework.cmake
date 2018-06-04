@@ -44,6 +44,8 @@ file(GLOB_RECURSE tf_core_framework_exclude_srcs
 )
 
 set(tf_core_framework_runtime_registration_srcs
+"${tensorflow_source_dir}/tensorflow/core/common_runtime/gpu/gpu_device.cc"
+"${tensorflow_source_dir}/tensorflow/core/common_runtime/gpu/gpu_device_factory.cc"
 "${tensorflow_source_dir}/tensorflow/core/common_runtime/threadpool_device_factory.cc"
 "${tensorflow_source_dir}/tensorflow/core/common_runtime/threadpool_device.cc"
 "${tensorflow_source_dir}/tensorflow/core/common_runtime/threadpool_device.h"

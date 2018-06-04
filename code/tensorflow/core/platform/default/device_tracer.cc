@@ -144,11 +144,11 @@ class CUPTIManager {
 
  private:
   // Static functions which we can use as CUPTI callbacks.
-  static void BufferRequested(uint8_t **buffer, size_t *size,
+  static void CUPTIAPI BufferRequested(uint8_t **buffer, size_t *size,
                               size_t *maxNumRecords) {
     GetCUPTIManager()->InternalBufferRequested(buffer, size, maxNumRecords);
   }
-  static void BufferCompleted(CUcontext ctx, uint32_t streamId, uint8_t *buffer,
+  static void CUPTIAPI BufferCompleted(CUcontext ctx, uint32_t streamId, uint8_t *buffer,
                               size_t size, size_t validSize) {
     GetCUPTIManager()->InternalBufferCompleted(ctx, streamId, buffer, size,
                                                validSize);
